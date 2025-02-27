@@ -5,7 +5,6 @@ author: minhpt
 date: 2025-02-11 18:00:00 +0700
 categories: [Self-hosted, Blogging]
 tags: [typography, jekyll, blog, github, self-hosted, tutorial]
-pin: true
 math: true
 mermaid: true
 image:
