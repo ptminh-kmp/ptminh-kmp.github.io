@@ -1,5 +1,6 @@
 ---
-title: Monetize Your Jekyll Site: A Step-by-Step Guide to Adding Google AdSense
+title: >- 
+  💰 Monetize Your Jekyll Site 💰: A Step-by-Step Guide to Adding Google AdSense
 description: >-
   Learn how to easily integrate Google AdSense into your Jekyll website and start earning revenue. This comprehensive guide covers everything from account setup to optimal ad placement.
 author: minhpt
@@ -8,7 +9,7 @@ categories: [Self-hosted, Blogging, AI]
 tags: [tutorial, self-hosted, jekyll, Jekyll AdSense, Add Google AdSense Jekyll, Monetize Jekyll Blog, Google AdSense Integration, Jekyll Ads, Jekyll Ad Revenue, Jekyll Ad Placement]
 image:
   path: https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/google-adsense.jpg
-  alt: Monetize Your Jekyll Site: A Step-by-Step Guide to Adding Google AdSense
+  alt: Monetize Your Jekyll Site A Step-by-Step Guide to Adding Google AdSense
 ---
 
 Want to turn your passion for writing into a source of income? If you're running a Jekyll-powered website or blog, adding Google AdSense is a fantastic way to monetize your content. While Jekyll is known for its simplicity and speed, integrating external services like AdSense can sometimes seem daunting. But fear not! This guide will walk you through the process step-by-step, ensuring you can seamlessly add AdSense to your Jekyll site.
