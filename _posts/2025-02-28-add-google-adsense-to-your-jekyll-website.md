@@ -1,5 +1,5 @@
 ---
-title: 💰 Monetize Your Jekyll Site 💰: A Step-by-Step Guide to Adding Google AdSense
+title: Monetize Your Jekyll Site: A Step-by-Step Guide to Adding Google AdSense
 description: >-
   Learn how to easily integrate Google AdSense into your Jekyll website and start earning revenue. This comprehensive guide covers everything from account setup to optimal ad placement.
 author: minhpt
@@ -105,5 +105,4 @@ touch ads.txt
 ### Conclusion:
 
 Adding Google AdSense to your Jekyll website is a straightforward process that can help you monetize your content. By following these steps and optimizing your ad placement, you can start earning revenue from your hard work. Remember to prioritize user experience and create valuable content to maximize your earnings. Happy monetizing!- Back to Google Adsense page and click `Verify` button.
-
 
