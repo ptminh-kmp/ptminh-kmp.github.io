@@ -7,11 +7,10 @@ date: 2025-02-27 00:00:00 +0700
 categories: [Self-hosted, Blogging, AI]
 tags: [tutorial, self-hosted, AI, docker, ollama, open webui]
 ---
-# Setting up Open WebUI with Ollama & Docker Desktop
 
 This blog post will guide you through setting up **Open WebUI**, a user-friendly interface, with **Ollama**, a lightweight and extensible framework for running large language models, all containerized with **Docker Desktop**. This setup is perfect for AI developers and bloggers who want to experiment with and showcase AI models locally, offering a streamlined and efficient workflow.
 
-## Why This Stack?
+### Why This Stack?
 
   * **Open WebUI**:  Provides a sleek and intuitive web interface to interact with language models. Forget command-line interfaces – Open WebUI offers a visual and user-friendly experience, making it ideal for demos and content creation.
   * **Ollama**: Simplifies the process of running and managing large language models on your local machine. It handles the complexities of model serving, letting you focus on using the models.
@@ -19,14 +18,14 @@ This blog post will guide you through setting up **Open WebUI**, a user-friendly
 
 Together, these tools create a robust and user-friendly platform for AI exploration and content generation.
 
-## Prerequisites
+### Prerequisites
 
 Before we begin, ensure you have the following installed:
 
 1.  **Docker Desktop**: Download and install [Docker Desktop](https://www.google.com/url?sa=E&source=gmail&q=https://www.docker.com/products/docker-desktop/). Follow the installation instructions for your operating system (Windows, macOS, or Linux).
 2.  **Ollama**: Download and install [Ollama](https://www.google.com/url?sa=E&source=gmail&q=https://ollama.com/).  Ollama provides installers for macOS and Linux. For Windows users, Ollama works seamlessly within WSL 2 (Windows Subsystem for Linux).
 
-## Step-by-Step Setup Guide
+### Step-by-Step Setup Guide
 
 Let's get everything up and running\! Follow these simple steps:
 
@@ -118,6 +117,6 @@ Docker Compose simplifies the deployment of multi-container Docker applications.
   * Explore the Open WebUI interface. You can now select and download models directly within the UI (powered by Ollama).
   * Start chatting with your chosen AI models\!
 
-## Conclusion
+### Conclusion
 
 Congratulations\! You've successfully set up Open WebUI with Ollama and Docker Desktop. You now have a powerful, local AI environment for experimenting with language models, generating blog content, and exploring the exciting world of AI.

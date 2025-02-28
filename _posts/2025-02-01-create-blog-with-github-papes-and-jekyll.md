@@ -8,8 +8,6 @@ categories: [Self-hosted, Blogging]
 tags: [blog, tutorial, github, jekyll, chirpy, self-hosted]
 ---
 
-## Create personal blog with Github Pages and Jekyll with Chirpy theme
-
 This guide will walk you through setting up and using the Chirpy Jekyll theme for your website.
 
 ### 1. Choose Your Starting Point
