@@ -61,18 +61,19 @@ touch google-adsense.html
 <head>
   ...
   {% include metadata-hook.html %}
-  {% include google-adsense.html %} //add this line
+  <!--add this line-->
+  {% include google-adsense.html %} 
 </head>
 ```
 
-#### Using Ads.txt snippet
+##### Using Ads.txt snippet
 1. Create `ads.txt` file in your Jekyll project
 ```bash
 touch ads.txt
 ```
 2. Edit `ads.txt` file with your Ads.txt snippet.
 
-#### Using Meta tag
+##### Using Meta tag
 1. Edit `head.html` file in `_includes` folder.
 2. Add Google Adsense meta tag insite `<head>` tag:
 ```html
@@ -82,7 +83,8 @@ touch ads.txt
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="google-adsense-account" content="[your-meta-tag]"> //add this line
+  <!--add this line-->
+  <meta name="google-adsense-account" content="[your-meta-tag]">
   <meta
     name="viewport"
     content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
@@ -90,20 +92,20 @@ touch ads.txt
   ...
 </head>
 ```
-### Step 3: Verify code and monitoring
+#### Step 3: Verify code and monitoring
 1. **AdSense Verification**: Google will review your site to ensure it complies with their policies. This may take some time.
 2. **Check Ad Display**: Once approved, ads should start appearing on your site.
 3. **Monitor Performance**: Use your AdSense dashboard to track your earnings and ad performance.
 4. **Optimize Ad Placement**: Experiment with different ad placements to maximize revenue.
 
-### Tips for Success:
+### Tips for Success
 
 - **Content is King**: Focus on creating high-quality, engaging content.
 - **Responsive Design**: Ensure your website and ads are responsive across devices.
 - **Ad Placement Optimization**: Avoid placing too many ads or ads that disrupt user experience.
 - **AdSense Policies**: Adhere to Google's AdSense policies to avoid account suspension.
 
-### Conclusion:
+### Conclusion
 
 Adding Google AdSense to your Jekyll website is a straightforward process that can help you monetize your content. By following these steps and optimizing your ad placement, you can start earning revenue from your hard work. Remember to prioritize user experience and create valuable content to maximize your earnings. Happy monetizing!- Back to Google Adsense page and click `Verify` button.
 
