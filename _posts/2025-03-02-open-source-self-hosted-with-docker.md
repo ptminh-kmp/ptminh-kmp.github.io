@@ -17,6 +17,7 @@ In this article, we’ll explore some of the best open-source SaaS alternatives 
 
 ### 1. **Nextcloud**  
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/nextcloud-hub-files-25-preview.png) 
+
 **Description**: Nextcloud is a self-hosted productivity platform that replaces tools like Google Drive, Dropbox, and Microsoft 365.  
 **Function Summary**: File storage, calendar, contacts, task management, and collaborative editing.  
 **Use Case**: Perfect for teams or individuals looking for a private cloud solution.  
@@ -34,6 +35,7 @@ docker run -d \
 
 ### 2. **Matomo**  
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/matomo.webp) 
+
 **Description**: Matomo is an open-source analytics platform that replaces Google Analytics.  
 **Function Summary**: Track website traffic, user behavior, and generate detailed reports.  
 **Use Case**: Ideal for businesses that want to own their analytics data and comply with privacy regulations like GDPR.  
@@ -51,6 +53,7 @@ docker run -d \
 
 ### 3. **Rocket.Chat** 
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/rocket-chat.webp) 
+
 **Description**: Rocket.Chat is a self-hosted team communication platform that replaces Slack or Microsoft Teams.  
 **Function Summary**: Real-time messaging, video calls, file sharing, and integrations with other tools.  
 **Use Case**: Great for teams that need a secure and customizable communication platform.  
@@ -68,6 +71,7 @@ docker run -d \
 
 ### 4. **InvoiceNinja**  
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/invoice-ninja.png)
+
 **Description**: InvoiceNinja is an open-source invoicing and billing platform that replaces tools like FreshBooks or QuickBooks.  
 **Function Summary**: Create invoices, track expenses, manage clients, and accept payments.  
 **Use Case**: Perfect for freelancers and small businesses looking for a self-hosted invoicing solution.  
@@ -85,6 +89,7 @@ docker run -d \
 
 ### 5. **Bitwarden**  
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/bitwarden.png)
+
 **Description**: Bitwarden is an open-source password manager that replaces LastPass or 1Password.  
 **Function Summary**: Store and manage passwords securely, generate strong passwords, and share credentials with teams.  
 **Use Case**: Essential for individuals and teams who prioritize password security.  
@@ -102,6 +107,7 @@ docker run -d \
 
 ### 6. **Gitea**  
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/gitea.png)
+
 **Description**: Gitea is a self-hosted Git service that replaces GitHub or GitLab.  
 **Function Summary**: Host and manage Git repositories, issue tracking, and collaboration.  
 **Use Case**: Ideal for developers and teams who want a lightweight and private Git solution.  
@@ -119,6 +125,7 @@ docker run -d \
 
 ### 7. **Strapi**  
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/strapi.svg){: width="318" }
+
 **Description**: Strapi is an open-source headless CMS that replaces WordPress or Contentful.  
 **Function Summary**: Build and manage APIs for content-rich applications.  
 **Use Case**: Perfect for developers building modern websites or apps with a flexible content backend.  
