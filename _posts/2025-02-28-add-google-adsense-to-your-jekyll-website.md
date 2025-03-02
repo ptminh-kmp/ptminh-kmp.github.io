@@ -52,30 +52,35 @@ touch head.html
 touch google-adsense.html
 ```
 5. Edit `google-adsense.html` file with your Google Adsense Snippet above.
+
 ```text
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=[your-ca-pub-id]"
      crossorigin="anonymous"></script>
 ```
-6. Edit `head.html`:
+1. Edit `head.html`:
+
 ```html
-<head>
-  ...
-  {% include metadata-hook.html %}
-  <!--add this line-->
-  {% include google-adsense.html %} 
-</head>
+  <head>
+    <!--some code above-->
+    {% include metadata-hook.html %}
+    <!--add this line-->
+    {% include google-adsense.html %} 
+  </head>
 ```
 
 ##### Using Ads.txt snippet
-1. Create `ads.txt` file in your Jekyll project
+1. Create `ads.txt` file in your Jekyll project:
+
 ```bash
-touch ads.txt
+  touch ads.txt
 ```
+
 2. Edit `ads.txt` file with your Ads.txt snippet.
 
 ##### Using Meta tag
 1. Edit `head.html` file in `_includes` folder.
 2. Add Google Adsense meta tag insite `<head>` tag:
+
 ```html
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -89,7 +94,7 @@ touch ads.txt
     name="viewport"
     content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
   >
-  ...
+  <!--some remain code-->
 </head>
 ```
 #### Step 3: Verify code and monitoring
