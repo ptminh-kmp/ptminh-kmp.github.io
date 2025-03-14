@@ -13,7 +13,6 @@ In today’s digital age, Software-as-a-Service (SaaS) solutions dominate the ma
 
 In this article, we’ll explore some of the best open-source SaaS alternatives that you can self-host using Docker. Each tool comes with a brief description, function summary, use case, GitHub repository, and Docker commands to get you started.
 
----
 
 ### 1. **Nextcloud**  
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/nextcloud-hub-files-25-preview.png) 
