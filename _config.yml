@@ -14,7 +14,7 @@ timezone: Asia/Saigon
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Minixium # the main title
+title: Minixium Blog # the main title
 
 tagline: My persional blog post for habbit, logs and... # it will display as the subtitle
 
