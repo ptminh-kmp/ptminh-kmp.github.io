@@ -1,5 +1,6 @@
 ---
-title: The Birth and Evolution of Enterprise Service Bus: Connecting the Enterprise
+title: >-
+    The Birth and Evolution of Enterprise Service Bus: Connecting the Enterprise
 description: >-
   Discover how Enterprise Service Bus (ESB) revolutionized system integration by solving the 'spaghetti architecture' problem. Learn about ESB's evolution, capabilities, and place in modern architecture.
 author: minhpt
