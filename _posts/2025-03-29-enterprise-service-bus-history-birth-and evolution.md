@@ -8,6 +8,10 @@ date: 2025-03-29 00:00:00 +0700
 categories: [Develop, Integration]
 tags: [enterprise service bus, ESB architecture, system integration, enterprise integration patterns, spaghetti integration, integration middleware, SOA, service oriented architecture, API gateway, microservices integration]
 mermaid: true
+image:
+    path: https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/esb-cover.jpg
+    alt: >- 
+        The Birth and Evolution of Enterprise Service Bus: Connecting the Enterprise
 ---
 Enterprise Service Bus (ESB) emerged as a critical architectural pattern in the early 2000s to solve integration challenges that organizations faced as their IT landscapes grew increasingly complex. Let's explore why ESBs were created, how they evolved, and their place in modern architecture.
 
