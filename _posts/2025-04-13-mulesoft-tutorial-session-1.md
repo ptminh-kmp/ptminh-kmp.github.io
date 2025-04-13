@@ -74,36 +74,7 @@ Acme Corp realized they needed a better way. They needed **middleware**.
 
 To solve the spaghetti mess, the concept of an **Enterprise Service Bus (ESB)** emerged. Think of an ESB as a central communication backbone or a middleware "bus" that applications plug into, instead of talking directly to each other.
 
-```mermaid
-graph LR
-    subgraph ESB Architecture Example
-
-        %% Define Systems (Nodes)
-        CRM[CRM System]
-        ERP[ERP System]
-        HR[HR System]
-        WebStore[Online WebStore]
-        Inventory[Inventory Mgmt]
-
-        %% Define the central ESB (Node)
-        %% We represent it as a node, the layout connects others to it.
-        ESB[Enterprise Service Bus]
-
-        %% Connections: All systems connect ONLY to the ESB
-        CRM --&gt; ESB
-        ERP --&gt; ESB
-        HR --&gt; ESB
-
-        ESB --&gt; WebStore
-        ESB --&gt; Inventory
-        ESB --&gt; CRM  // Example return flow
-        ESB --&gt; ERP  // Example return flow
-
-        %% Optional: Style the ESB node differently if renderer supports it
-        %% style ESB fill:#f9f,stroke:#333,stroke-width:2px
-
-    end
-```
+![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/esb-diagram.png)
 
 ### ESB Concepts:
 
@@ -214,38 +185,7 @@ It acts as:
 * **API Manager:** Governs and secures your APIs.
 * **Anypoint Exchange:** A marketplace for discovering and sharing reusable assets like APIs and connectors.
 
-```mermaid
-graph LR %% Using LR for potentially better cycle visualization
-    subgraph MuleSoft Anypoint Platform Lifecycle
-
-        %% Define the core stages/phases as nodes
-        %% Components associated with each stage are listed using HTML line breaks (<br/>)
-        Design["<b>Design</b><br/>Anypoint Studio<br/>Anypoint Exchange<br/>API Designer"]
-        Implement["<b>Implement</b><br/>Anypoint Studio<br/>(Flow Designer)"]
-        Run["<b>Run</b><br/>Mule Runtime Engine<br/>(CloudHub, RTF, On-Prem)"]
-        Manage["<b>Manage</b><br/>API Manager<br/>Runtime Manager<br/>Anypoint Monitoring<br/>Visualizer"]
-        Secure["<b>Secure</b><br/>API Manager Policies<br/>Secrets Manager"]
-
-
-        %% Define the cyclical flow, connecting stages
-        Design --> Implement
-        Implement --> Run
-        Run --> Manage
-        Manage --> Secure  %% Security is often applied during/after management
-        Secure --> Design %% Feedback loop to design/improve
-        Manage ---> Design %% Also direct feedback loop for monitoring/analytics
-
-
-        %% Styling suggestion (optional, depends on renderer support)
-        %% style Design fill:#ccf,stroke:#333,stroke-width:2px
-        %% style Implement fill:#cef,stroke:#333,stroke-width:2px
-        %% style Run fill:#cfc,stroke:#333,stroke-width:2px
-        %% style Manage fill:#fec,stroke:#333,stroke-width:2px
-        %% style Secure fill:#fcc,stroke:#333,stroke-width:2px
-
-
-    end
-```
+![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/mulesoft-lifecycle.png)
 
 MuleSoft's goal is to make integration easier and faster, moving away from brittle connections towards a flexible network of reusable APIs.
 
