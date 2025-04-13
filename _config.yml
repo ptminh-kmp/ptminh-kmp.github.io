@@ -214,6 +214,7 @@ sass:
   sass_dir: assets/css
   load_paths:
     - assets/css
+    - _sass
 
 compress_html:
   clippings: all
