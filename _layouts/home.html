@@ -1,0 +1,11 @@
+---
+layout: default
+---
+
+<div class="post-list">
+  {% include post-lang.html %}
+</div>
+
+{% if paginator.total_pages > 1 %}
+  {% include paginator.html %}
+{% endif %} 

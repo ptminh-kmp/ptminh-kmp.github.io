@@ -8,18 +8,32 @@ theme: jekyll-theme-chirpy
 # otherwise, the layout language will use the default value of 'en'.
 lang: en
 
+# Available languages
+languages:
+  - en
+  - vi
+
+# Default language
+default_lang: en
+
+# Language-specific settings
+lang_settings:
+  en:
+    title: Minixium Blog
+    tagline: My personal blog post for habit, logs and...
+    description: >-
+      Learn development from the basics to advanced topics. Discover tutorials, tips, and projects to boost your coding skills.
+  vi:
+    title: Blog Minixium
+    tagline: Blog cá nhân của tôi về thói quen, nhật ký và...
+    description: >-
+      Học phát triển từ cơ bản đến nâng cao. Khám phá hướng dẫn, mẹo và dự án để nâng cao kỹ năng lập trình của bạn.
+
 # Change to your timezone › https://kevinnovak.github.io/Time-Zone-Picker
 timezone: Asia/Saigon
 
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
-
-title: Minixium Blog # the main title
-
-tagline: My persional blog post for habbit, logs and... # it will display as the subtitle
-
-description: >- # used by seo meta and the atom feed
-  Learn development from the basics to advanced topics. Discover tutorials, tips, and projects to boost your coding skills.
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.

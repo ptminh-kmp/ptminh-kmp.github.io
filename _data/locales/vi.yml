@@ -1,0 +1,44 @@
+# Vietnamese translations
+tabs:
+  home: Trang chủ
+  archive: Lưu trữ
+  categories: Danh mục
+  tags: Thẻ
+  about: Giới thiệu
+
+post:
+  read_more: Đọc thêm
+  share: Chia sẻ
+  edit: Chỉnh sửa
+  created: Được tạo
+  updated: Cập nhật
+  reading_time: Thời gian đọc
+  words: từ
+  minutes: phút
+  translation: Có sẵn bằng
+
+pagination:
+  newer: Mới hơn
+  older: Cũ hơn
+  prev: Trước
+  next: Sau
+
+search:
+  placeholder: Tìm kiếm bài viết...
+  results: Kết quả tìm kiếm
+  no_results: Không tìm thấy kết quả
+
+footer:
+  powered_by: Được cung cấp bởi
+  theme: Giao diện
+  copyright: Bản quyền
+  all_rights_reserved: Đã đăng ký bản quyền
+
+comments:
+  title: Bình luận
+  no_comments: Chưa có bình luận nào
+  add_comment: Thêm bình luận
+  name: Tên
+  email: Email
+  website: Trang web
+  submit: Gửi 

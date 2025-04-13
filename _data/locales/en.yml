@@ -1,0 +1,44 @@
+# English translations
+tabs:
+  home: Home
+  archive: Archive
+  categories: Categories
+  tags: Tags
+  about: About
+
+post:
+  read_more: Read More
+  share: Share
+  edit: Edit
+  created: Created
+  updated: Updated
+  reading_time: Reading Time
+  words: words
+  minutes: minutes
+  translation: Available in
+
+pagination:
+  newer: Newer
+  older: Older
+  prev: Previous
+  next: Next
+
+search:
+  placeholder: Search posts...
+  results: Search Results
+  no_results: No results found
+
+footer:
+  powered_by: Powered by
+  theme: Theme
+  copyright: Copyright
+  all_rights_reserved: All rights reserved
+
+comments:
+  title: Comments
+  no_comments: No comments yet
+  add_comment: Add a comment
+  name: Name
+  email: Email
+  website: Website
+  submit: Submit 

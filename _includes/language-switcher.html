@@ -1,0 +1,26 @@
+{% if site.languages.size > 1 %}
+<div class="language-switcher">
+  <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {% if site.lang == 'en' %}
+      English
+    {% elsif site.lang == 'vi' %}
+      Tiếng Việt
+    {% endif %}
+  </button>
+  <ul class="dropdown-menu">
+    {% for lang in site.languages %}
+      {% if lang != site.lang %}
+        <li>
+          <a class="dropdown-item" href="{% if lang == site.default_lang %}/{% else %}/{{ lang }}/{% endif %}">
+            {% if lang == 'en' %}
+              English
+            {% elsif lang == 'vi' %}
+              Tiếng Việt
+            {% endif %}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %} 

@@ -1,0 +1,35 @@
+.language-switcher {
+  position: relative;
+  display: inline-block;
+  margin-left: 1rem;
+
+  .btn {
+    background-color: transparent;
+    border: 1px solid var(--btn-border-color);
+    color: var(--text-color);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+
+    &:hover {
+      background-color: var(--btn-hover-bg);
+      border-color: var(--btn-hover-border-color);
+    }
+  }
+
+  .dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--btn-border-color);
+    min-width: 120px;
+    padding: 0.5rem 0;
+  }
+
+  .dropdown-item {
+    color: var(--text-color);
+    padding: 0.25rem 1rem;
+
+    &:hover {
+      background-color: var(--btn-hover-bg);
+      color: var(--text-color);
+    }
+  }
+} 
