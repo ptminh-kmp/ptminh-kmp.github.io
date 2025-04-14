@@ -205,16 +205,15 @@ compress_html:
   ignore:
     envs: [development]
 
-exclude:
-  - "*.gem"
-  - "*.gemspec"
-  - docs
+exclude: # Modified with reference to https://github.com/untra/polyglot/issues/204
+  # - "*.gem"
+  - jekyll-theme-chirpy.gemspec # - "*.gemspec"
   - tools
   - README.md
   - LICENSE
-  - purgecss.js
+  - purgecss.config.js # - "*.config.js"
   - rollup.config.js
-  - "package*.json"
+  - package*.json
 
 jekyll-archives:
   enabled: [categories, tags]
@@ -224,3 +223,16 @@ jekyll-archives:
   permalinks:
     tag: /tags/:name/
     category: /categories/:name/
+
+plugins:
+  - jekyll-polyglot
+
+# Polyglot Settings
+languages: ["en", "vi"]
+default_lang: "en"
+exclude_from_localization: ["javascript", "images", "css", "public", "assets", "sitemap"]
+parallel_localization: false
+lang_from_path: true
+
+sass:
+  sourcemap: never # In Jekyll 4.0 , SCSS source maps will generate improperly due to how Polyglot operates 
