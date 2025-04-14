@@ -1,7 +1,7 @@
 ---
 title: "MuleSoft Tutorial for Beginners [Part 1]: From Spaghetti Chaos to Modern Integration (ESB, API Gateway & MuleSoft Explained)"
 date: 2025-04-13
-categories: [MuleSoft, Tutorial, Integration, ESB, API Gateway]
+categories: [Develop, Integration]
 tags: [MuleSoft, MuleSoft Tutorial, ESB, Enterprise Service Bus, API Gateway, Integration, Middleware, Anypoint Platform, API Management, Beginner]
 author: minhpt
 mermaid: true
@@ -76,20 +76,20 @@ To solve the spaghetti mess, the concept of an **Enterprise Service Bus (ESB)** 
 
 ![Desktop View](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/esb-diagram.png)
 
-### ESB Concepts:
+### ESB Concepts
 
 * **Mediation:** The ESB can translate data formats between different systems (e.g., XML to JSON).
 * **Routing:** It directs messages from a source system to the correct destination system(s).
 * **Protocol Transformation:** It can handle communication between systems using different protocols (e.g., HTTP to JMS).
 * **Centralization:** Provides a single point for managing and monitoring integrations.
 
-### Strengths of ESB:
+### Strengths of ESB
 
 * **Decoupling:** Systems don't need to know the specific details (location, protocol, data format) of other systems. They just talk to the ESB.
 * **Reusability:** Common integration logic (like data transformation or authentication) can often be built into the ESB and reused.
 * **Improved Maintainability:** Changes in one system are less likely to impact others, as the ESB handles the mediation.
 
-### Weaknesses of ESB:
+### Weaknesses of ESB
 
 * **Potential Bottleneck:** If not designed correctly, the central ESB itself can become a performance bottleneck.
 * **Complexity:** Implementing and managing a feature-rich ESB can be complex.
@@ -134,7 +134,7 @@ graph TD
     end
 ```
 
-### API Gateway Concepts:
+### API Gateway Concepts
 
 * **API Exposure:** Presents backend services as managed APIs.
 * **Security Enforcement:** Handles authentication, authorization, rate limiting, and other security policies.
