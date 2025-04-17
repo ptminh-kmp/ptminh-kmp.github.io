@@ -6,6 +6,9 @@ tags: [MuleSoft, MuleSoft Tutorial, ESB, Enterprise Service Bus, API Gateway, In
 author: minhpt
 mermaid: true
 description: "Bắt đầu hành trình MuleSoft của bạn! Hiểu về các thách thức tích hợp (kiến trúc spaghetti), sự xuất hiện của ESB và API Gateway, và vai trò của MuleSoft. Phù hợp cho người mới bắt đầu."
+image:
+  path: https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/MuleSoft%20Tutorial%20For%20Beginners.png
+  alt: MuleSoft cho Người mới bắt đầu [Phần 1]
 ---
 
 Xin chào mọi người và chào mừng đến với bài viết đầu tiên trong loạt bài hướng dẫn MuleSoft! Là một lập trình viên MuleSoft và phụ trách tích hợp dữ liệu giữa các hệ thống, tôi thường thấy các công ty gặp khó khăn trong việc kết nối ngày càng nhiều ứng dụng của họ. Nếu bạn mới làm quen với tích hợp hoặc tò mò về MuleSoft, bạn đã đến đúng nơi. Hãy bắt đầu với một câu chuyện quen thuộc.
