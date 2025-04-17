@@ -6,6 +6,9 @@ tags: [MuleSoft, MuleSoft Tutorial, ESB, Enterprise Service Bus, API Gateway, In
 author: minhpt
 mermaid: true
 description: "Kickstart your MuleSoft journey! Understand integration challenges (spaghetti architecture), the rise of ESB and API Gateway, and where MuleSoft fits in. Perfect for beginners."
+image:
+  path: https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/MuleSoft%20Tutorial%20For%20Beginners.png
+  alt: MuleSoft Tutorial for Beginners [Part 1]
 ---
 
 Hey everyone, and welcome to the first post in our MuleSoft Tutorial series! As a senior MuleSoft developer, I often see companies struggling with connecting their ever-growing number of applications. If you're new to integration or curious about MuleSoft, you're in the right place. Let's start with a familiar story.
