@@ -1,0 +1,343 @@
+import asyncio
+import aiohttp # Cần cài đặt: pip install aiohttp
+import base64
+import json
+import os
+import time
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding as asym_padding, rsa
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from cryptography.exceptions import InvalidSignature # Để bắt lỗi khi xác minh chữ ký
+from typing import Optional # Cho type hint của password
+
+# --- CÁC HÀM ĐÃ ĐỊNH NGHĨA TRƯỚC ĐÓ ---
+# get_rsa_public_key_hazmat
+# encrypt_content_for_api
+# load_rsa_private_key_hazmat
+# sign_data_sha256withrsa_hazmat
+# verify_signature_sha256withrsa_hazmat
+# call_backend_api (đã cập nhật để nhận signature)
+# process_single_line (đã cập nhật để ký và mã hóa)
+# process_file_for_pt (đã cập nhật để tải khóa ký và truyền đi)
+# --- (Bạn có thể dán các hàm này từ các phản hồi trước vào đây) ---
+
+def get_rsa_public_key_hazmat(cert_path: str) -> rsa.RSAPublicKey:
+    try:
+        with open(cert_path, "rb") as cert_file:
+            cert_data = cert_file.read()
+        try:
+            cert = x509.load_pem_x509_certificate(cert_data, default_backend())
+        except ValueError:
+            cert = x509.load_der_x509_certificate(cert_data, default_backend())
+        public_key = cert.public_key()
+        if not isinstance(public_key, rsa.RSAPublicKey):
+            raise TypeError("Khóa công khai trong chứng chỉ không phải là khóa RSA.")
+        return public_key
+    except FileNotFoundError:
+        raise Exception(f"Hazmat Get PublicKey: Không tìm thấy tệp chứng chỉ tại '{cert_path}'")
+    except Exception as e:
+        raise Exception(f"Exception Hazmat Get Publickey: {e}")
+
+def encrypt_content_for_api(json_string_payload: str,
+                            rsa_public_key_obj: rsa.RSAPublicKey) -> str:
+    try:
+        aes_key_bytes = os.urandom(32)
+        data_bytes = json_string_payload.encode('utf-8')
+        iv = os.urandom(16)
+        aes_cipher = Cipher(algorithms.AES(aes_key_bytes), modes.GCM(iv), backend=default_backend())
+        encryptor = aes_cipher.encryptor()
+        aes_ciphertext = encryptor.update(data_bytes) + encryptor.finalize()
+        aes_tag = encryptor.tag
+        com_iv_and_en_source = iv + aes_ciphertext + aes_tag
+        encrypted_aes_key = rsa_public_key_obj.encrypt(
+            aes_key_bytes,
+            asym_padding.PKCS1v15()
+        )
+        combined_output_bytes = encrypted_aes_key + com_iv_and_en_source
+        base64_return = base64.b64encode(combined_output_bytes).decode('utf-8')
+        return base64_return
+    except Exception as e:
+        raise Exception(f"Lỗi trong quá trình mã hóa nội dung cho API: {e}")
+
+def load_rsa_private_key_hazmat(private_key_pem_path: str, password: Optional[bytes] = None) -> rsa.RSAPrivateKey:
+    try:
+        with open(private_key_pem_path, "rb") as key_file:
+            private_key = serialization.load_pem_private_key(
+                key_file.read(),
+                password=password,
+                backend=default_backend()
+            )
+        if not isinstance(private_key, rsa.RSAPrivateKey):
+            raise TypeError("Tệp không chứa khóa riêng tư RSA hợp lệ.")
+        return private_key
+    except FileNotFoundError:
+        raise Exception(f"Hazmat Load Private Key: Không tìm thấy tệp khóa riêng tư tại '{private_key_pem_path}'")
+    except (TypeError, ValueError) as e:
+        raise Exception(f"Hazmat Load Private Key: Lỗi khi tải khóa riêng tư (có thể sai mật khẩu hoặc định dạng): {e}")
+    except Exception as e:
+        raise Exception(f"Exception Hazmat Load Private Key: {e}")
+
+def sign_data_sha256withrsa_hazmat(data_to_sign_str: str, private_key_obj: rsa.RSAPrivateKey) -> str:
+    try:
+        data_bytes = data_to_sign_str.encode('utf-8')
+        signature_bytes = private_key_obj.sign(
+            data_bytes,
+            asym_padding.PKCS1v15(),
+            hashes.SHA256()
+        )
+        signature_base64 = base64.b64encode(signature_bytes).decode('utf-8')
+        return signature_base64
+    except Exception as e:
+        raise Exception(f"Lỗi khi ký dữ liệu SHA256withRSA: {e}")
+
+def verify_signature_sha256withrsa_hazmat(data_that_was_signed_str: str,
+                                          signature_base64_str: str,
+                                          public_key_obj: rsa.RSAPublicKey) -> bool:
+    try:
+        data_bytes = data_that_was_signed_str.encode('utf-8')
+        signature_bytes = base64.b64decode(signature_base64_str)
+        public_key_obj.verify(
+            signature_bytes,
+            data_bytes,
+            asym_padding.PKCS1v15(),
+            hashes.SHA256()
+        )
+        return True
+    except InvalidSignature:
+        return False
+    except Exception as e:
+        print(f"Lỗi khi xác minh chữ ký: {e}")
+        return False
+
+async def call_backend_api(session: aiohttp.ClientSession, api_url: str, encrypted_payload: str, line_number: int, signature_base64: Optional[str] = None):
+    api_payload = {"encryptedPayload": encrypted_payload}
+    headers = {"Content-Type": "application/json"}
+    if signature_base64:
+        headers["X-Signature"] = signature_base64
+        print(f"Dòng {line_number}: Gửi kèm chữ ký (phần đầu): {signature_base64[:30]}...")
+
+
+    try:
+        async with session.post(api_url, json=api_payload, headers=headers) as response:
+            response_text = await response.text()
+            if response.status >= 200 and response.status < 300:
+                print(f"Dòng {line_number}: SUCCESS (HTTP {response.status}) - API Response: {response_text[:100]}...")
+                return True
+            else:
+                print(f"Dòng {line_number}: FAILED (HTTP {response.status}) - API Response: {response_text}")
+                return False
+    except aiohttp.ClientConnectorError as e:
+        print(f"Dòng {line_number}: FAILED (Connection Error) - {e}")
+        return False
+    except asyncio.TimeoutError:
+        print(f"Dòng {line_number}: FAILED (Timeout)")
+        return False
+    except Exception as e:
+        print(f"Dòng {line_number}: FAILED (Unknown API Call Error) - {e}")
+        return False
+
+async def process_single_line(json_payload_str: str,
+                              rsa_pk_encryption: rsa.RSAPublicKey,
+                              rsa_sk_signing: Optional[rsa.RSAPrivateKey],
+                              session: aiohttp.ClientSession,
+                              api_url: str,
+                              line_num: int,
+                              semaphore: asyncio.Semaphore) -> bool:
+    signature_b64 = None
+    try:
+        try:
+            json.loads(json_payload_str)
+        except json.JSONDecodeError:
+            print(f"Dòng {line_num}: LỖI - Không phải JSON hợp lệ: '{json_payload_str[:100]}...'")
+            return False
+
+        # Mã hóa dữ liệu gốc
+        # print(f"Dòng {line_num}: Đang mã hóa...")
+        encrypted_payload = encrypt_content_for_api(json_payload_str, rsa_pk_encryption)
+
+        # Nếu có khóa riêng tư để ký, thực hiện ký số dữ liệu gốc
+        if rsa_sk_signing:
+            # print(f"Dòng {line_num}: Đang ký dữ liệu...")
+            data_to_sign = json_payload_str # Ký chuỗi JSON gốc
+            signature_b64 = sign_data_sha256withrsa_hazmat(data_to_sign, rsa_sk_signing)
+        else:
+            print(f"Dòng {line_num}: Không thực hiện ký số (không có khóa ký).")
+
+
+        # print(f"Dòng {line_num}: Đang gọi API...")
+        success = await call_backend_api(session, api_url, encrypted_payload, line_num, signature_b64)
+        return success
+    except Exception as e:
+        print(f"Dòng {line_num}: LỖI trong quá trình xử lý dòng - {e}")
+        # import traceback # Bỏ comment nếu muốn xem stack trace chi tiết
+        # traceback.print_exc()
+        return False
+    finally:
+        semaphore.release()
+
+async def process_file_for_pt(txt_file_path: str,
+                              encryption_cert_path: str,
+                              signing_key_path: Optional[str],
+                              signing_key_password: Optional[str],
+                              api_url: str,
+                              target_tps: int = 30):
+    print("Đang tải khóa công khai RSA để mã hóa...")
+    try:
+        rsa_pk_encryption_obj = get_rsa_public_key_hazmat(encryption_cert_path)
+        print(f"Tải khóa công khai RSA ({rsa_pk_encryption_obj.key_size} bit) để mã hóa thành công.")
+    except Exception as e:
+        print(f"LỖI NGHIÊM TRỌNG: Không thể tải khóa công khai RSA từ '{encryption_cert_path}'. Lỗi: {e}")
+        return
+
+    rsa_sk_signing_obj = None
+    if signing_key_path and os.path.exists(signing_key_path): # Chỉ tải nếu đường dẫn được cung cấp và tệp tồn tại
+        print(f"Đang tải khóa riêng tư RSA để ký từ '{signing_key_path}'...")
+        try:
+            password_bytes = signing_key_password.encode('utf-8') if signing_key_password else None
+            rsa_sk_signing_obj = load_rsa_private_key_hazmat(signing_key_path, password=password_bytes)
+            print(f"Tải khóa riêng tư RSA ({rsa_sk_signing_obj.key_size} bit) để ký thành công.")
+        except Exception as e:
+            print(f"CẢNH BÁO: Không thể tải khóa riêng tư RSA để ký từ '{signing_key_path}'. Lỗi: {e}")
+            print("Quá trình Performance Test sẽ tiếp tục mà không có ký số cho các request.")
+    elif signing_key_path: # Đường dẫn được cung cấp nhưng tệp không tồn tại
+         print(f"CẢNH BÁO: Tệp khóa riêng tư để ký '{signing_key_path}' không tồn tại.")
+         print("Quá trình Performance Test sẽ tiếp tục mà không có ký số cho các request.")
+    else: # Không cung cấp đường dẫn khóa ký
+        print("Thông tin: Không có đường dẫn khóa riêng tư để ký nào được cung cấp. Sẽ không thực hiện ký số.")
+
+
+    semaphore_limit = target_tps * 2
+    semaphore = asyncio.Semaphore(semaphore_limit)
+    tasks = []
+    request_count = 0
+    success_count = 0
+    failed_count = 0
+    start_time_processing = time.monotonic()
+
+    async with aiohttp.ClientSession() as session:
+        print(f"\nBắt đầu xử lý tệp PT: '{txt_file_path}' với mục tiêu {target_tps} TPS")
+        try:
+            with open(txt_file_path, 'r', encoding='utf-8') as f:
+                for line_number, line_content in enumerate(f, 1):
+                    json_string_payload = line_content.strip()
+                    if not json_string_payload:
+                        continue
+                    await semaphore.acquire()
+                    request_count += 1
+                    task = asyncio.create_task(
+                        process_single_line(
+                            json_string_payload,
+                            rsa_pk_encryption_obj,
+                            rsa_sk_signing_obj,
+                            session,
+                            api_url,
+                            line_number,
+                            semaphore
+                        )
+                    )
+                    tasks.append(task)
+                    if len(tasks) >= semaphore_limit * 1.5 :
+                        completed_tasks = await asyncio.gather(*tasks, return_exceptions=True)
+                        for result in completed_tasks:
+                            if isinstance(result, Exception): failed_count +=1
+                            elif result: success_count +=1
+                            else: failed_count +=1
+                        tasks = []
+        except FileNotFoundError:
+            print(f"LỖI: Không tìm thấy tệp dữ liệu '{txt_file_path}'.")
+            return
+        except Exception as e:
+            print(f"LỖI khi đọc tệp hoặc khởi tạo quá trình PT: {e}")
+            return
+        if tasks:
+            completed_tasks = await asyncio.gather(*tasks, return_exceptions=True)
+            for result in completed_tasks:
+                if isinstance(result, Exception): failed_count +=1
+                elif result: success_count +=1
+                else: failed_count +=1
+
+    end_time_processing = time.monotonic()
+    total_time_seconds = end_time_processing - start_time_processing
+    actual_tps = request_count / total_time_seconds if total_time_seconds > 0 else 0
+    print("\n--- HOÀN TẤT XỬ LÝ PT ---")
+    print(f"Tổng số dòng (request) đã xử lý: {request_count}")
+    print(f"Thành công: {success_count}")
+    print(f"Thất bại: {failed_count}")
+    print(f"Tổng thời gian xử lý: {total_time_seconds:.2f} giây")
+    print(f"TPS thực tế đạt được: {actual_tps:.2f} TPS")
+
+
+# --- Điểm khởi chạy chính ---
+if __name__ == '__main__':
+    # --- CẤU HÌNH CHO PERFORMANCE TEST ---
+    # Đường dẫn đến tệp .txt chứa dữ liệu JSON trên mỗi dòng
+    TXT_FILE_PATH_PT = "data_for_pt.txt" # <--- THAY ĐỔI
+
+    # Đường dẫn đến tệp .cer chứa khóa CÔNG KHAI để MÃ HÓA dữ liệu
+    ENCRYPTION_CERT_PATH_PT = "your_encryption_public_key.cer" # <--- THAY ĐỔI
+    
+    # Đường dẫn đến tệp .pem chứa khóa RIÊNG TƯ để KÝ SỐ dữ liệu
+    # Đặt là None nếu bạn không muốn thực hiện ký số trong quá trình PT.
+    SIGNING_PRIVATE_KEY_PATH_PT = "your_signing_private_key.pem" # <--- THAY ĐỔI hoặc đặt None
+    SIGNING_PRIVATE_KEY_PASSWORD_PT = None # <--- THAY ĐỔI: Mật khẩu (nếu có)
+
+    API_URL_PT = "https://your-backend-api.com/process-pt-data"  # <--- THAY ĐỔI
+    TARGET_TPS_PT = 30
+
+    # --- (Tùy chọn) Phần demo ký số và xác minh riêng lẻ ---
+    # Bạn có thể comment/uncomment phần này nếu muốn chạy demo riêng
+    # VERIFICATION_PUBLIC_KEY_PATH_DEMO = "your_signing_verification_public_key.pem" # Tương ứng với SIGNING_PRIVATE_KEY_PATH_PT
+    # if SIGNING_PRIVATE_KEY_PATH_PT and os.path.exists(SIGNING_PRIVATE_KEY_PATH_PT) and \
+    #    VERIFICATION_PUBLIC_KEY_PATH_DEMO and os.path.exists(VERIFICATION_PUBLIC_KEY_PATH_DEMO):
+    #     print("\n--- [DEMO] KÝ SỐ VÀ XÁC MINH (chạy một lần) ---")
+    #     try:
+    #         sample_data = f'{{"message": "Hello for signing demo", "ts": "{time.time()}"}}'
+    #         print(f"Dữ liệu demo để ký: {sample_data}")
+    #         signing_key_pass_bytes = SIGNING_PRIVATE_KEY_PASSWORD_PT.encode() if SIGNING_PRIVATE_KEY_PASSWORD_PT else None
+    #         demo_signing_priv_key = load_rsa_private_key_hazmat(SIGNING_PRIVATE_KEY_PATH_PT, signing_key_pass_bytes)
+    #         demo_signature = sign_data_sha256withrsa_hazmat(sample_data, demo_signing_priv_key)
+    #         print(f"Chữ ký demo (Base64): {demo_signature[:60]}...")
+            
+    #         demo_verify_pub_key = None
+    #         try:
+    #             with open(VERIFICATION_PUBLIC_KEY_PATH_DEMO, "rb") as f:
+    #                 demo_verify_pub_key = serialization.load_pem_public_key(f.read(), backend=default_backend())
+    #         except ValueError:
+    #             demo_verify_pub_key = get_rsa_public_key_hazmat(VERIFICATION_PUBLIC_KEY_PATH_DEMO)
+            
+    #         if not isinstance(demo_verify_pub_key, rsa.RSAPublicKey): raise TypeError("Lỗi tải khóa công khai demo.")
+
+    #         is_valid_demo = verify_signature_sha256withrsa_hazmat(sample_data, demo_signature, demo_verify_pub_key)
+    #         print(f"Kết quả xác minh chữ ký demo: {'THÀNH CÔNG' if is_valid_demo else 'THẤT BẠI'}")
+    #     except Exception as e_demo:
+    #         print(f"Lỗi trong demo ký số: {e_demo}")
+    #     print("--- KẾT THÚC DEMO ---\n")
+    # else:
+    #     print("\nLƯU Ý: Bỏ qua phần demo ký số do thiếu tệp khóa.\n")
+
+
+    # --- CHẠY CHÍNH: PERFORMANCE TEST ---
+    print("CHUẨN BỊ CHẠY PERFORMANCE TEST...")
+    # Tạo file data_pt.txt mẫu nếu chưa có
+    if not os.path.exists(TXT_FILE_PATH_PT):
+        print(f"Tạo tệp dữ liệu mẫu '{TXT_FILE_PATH_PT}' cho PT...")
+        with open(TXT_FILE_PATH_PT, "w", encoding='utf-8') as f_sample_pt:
+            for i in range(500): # Số lượng dòng cho PT, ví dụ 500
+                f_sample_pt.write(f'{{"mobileNumber": "PT{i:06d}", "value": {100+i}}}\n')
+        print(f"Đã tạo tệp {TXT_FILE_PATH_PT}.")
+
+    if not os.path.exists(ENCRYPTION_CERT_PATH_PT):
+         print(f"LỖI NGHIÊM TRỌNG: Tệp chứng chỉ mã hóa '{ENCRYPTION_CERT_PATH_PT}' không tồn tại. Không thể chạy PT.")
+    else:
+        # Chạy hàm xử lý chính cho Performance Test
+        # Hàm này sẽ mã hóa VÀ ký số (nếu SIGNING_PRIVATE_KEY_PATH_PT được cung cấp và hợp lệ) từng dòng trong file txt
+        asyncio.run(process_file_for_pt(
+            txt_file_path=TXT_FILE_PATH_PT,
+            encryption_cert_path=ENCRYPTION_CERT_PATH_PT,
+            signing_key_path=SIGNING_PRIVATE_KEY_PATH_PT, # Sẽ là None nếu không muốn ký
+            signing_key_password=SIGNING_PRIVATE_KEY_PASSWORD_PT, # Sẽ là None nếu không có pass
+            api_url=API_URL_PT,
+            target_tps=TARGET_TPS_PT
+        ))
