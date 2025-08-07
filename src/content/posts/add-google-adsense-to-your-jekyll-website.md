@@ -11,8 +11,6 @@ image: https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/google-adsense.jp
 
 ---
 
-> Cover image source: [Source](https://minixium-bucket.hn.ss.bfcplatform.vn/blog/posts/google-adsense.jpg)
-
 Want to turn your passion for writing into a source of income? If you're running a Jekyll-powered website or blog, adding Google AdSense is a fantastic way to monetize your content. While Jekyll is known for its simplicity and speed, integrating external services like AdSense can sometimes seem daunting. But fear not! This guide will walk you through the process step-by-step, ensuring you can seamlessly add AdSense to your Jekyll site.
 
 ### Why Use Google AdSense with Jekyll?

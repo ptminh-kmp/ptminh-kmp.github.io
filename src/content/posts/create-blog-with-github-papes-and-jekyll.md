@@ -9,6 +9,7 @@ tags: [blog, tutorial, github, jekyll, chirpy, self-hosted]
 lang: en
 ---
 
+
 This guide will walk you through setting up and using the Chirpy Jekyll theme for your website.
 
 ### 1. Choose Your Starting Point
