@@ -1,4 +1,3 @@
-```markdown
 ---
 layout: '/src/layouts/BlogPost.astro'
 title: 'Frappe/ERPNext - Giải pháp ERP mã nguồn mở hàng đầu cho doanh nghiệp'
@@ -174,4 +173,3 @@ Sau khi hoàn tất, bạn có thể truy cập ERPNext tại: `http://localhost
 - Tham khảo thêm tài liệu chính thức tại [https://frappe.io/docs](https://frappe.io/docs)
 
 ERPNext là giải pháp ERP mã nguồn mở mạnh mẽ, phù hợp cho các doanh nghiệp muốn tự chủ hệ thống quản lý mà không phải trả phí bản quyền cao. Với cộng đồng phát triển tích cực và hệ sinh thái ứng dụng phong phú, đây chắc chắn là lựa chọn đáng cân nhắc cho các doanh nghiệp vừa và nhỏ.
-```
