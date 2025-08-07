@@ -1,4 +1,3 @@
-```markdown
 ---
 title: "Frappe/ERPNext - Giải pháp ERP mã nguồn mở hàng đầu cho doanh nghiệp"
 description: "Khám phá ERPNext - nền tảng ERP mã nguồn mở miễn phí với hơn 24k stars trên GitHub. Đánh giá chi tiết tính năng, ưu nhược điểm và hướng dẫn cài đặt."
