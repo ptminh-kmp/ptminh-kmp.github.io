@@ -1,4 +1,3 @@
-```markdown
 ---
 title: "Frappe/ERPNext - A Free and Open Source ERP System for Businesses"
 description: "Discover Frappe/ERPNext, a powerful open-source ERP solution that rivals commercial alternatives. Learn its features, pros, cons, and how to self-host it."
