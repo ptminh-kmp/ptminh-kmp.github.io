@@ -1,5 +1,5 @@
 ---
-title: LibreChat: The Ultimate Open-Source ChatGPT Alternative for Self-Hosting
+title: "LibreChat: The Ultimate Open-Source ChatGPT Alternative for Self-Hosting"
 description: Discover LibreChat, an enhanced ChatGPT clone with multi-model support, secure authentication, and powerful AI features for self-hosting. Perfect for developers and enterprises.
 published: 2025-09-09
 tags: ['open-source', 'self-host', 'chatgpt-alternative', 'ai-chat', 'docker', 'nodejs', 'langchain']
@@ -42,14 +42,16 @@ LibreChat boasts an extensive set of features, making it a versatile tool for AI
 
 ## 5. Pros and Cons
 
-### Pros:
+### Pros
+
 - **Open Source and Free:** No subscription fees; full control over deployment and data.
 - **Extensive Model Support:** Flexibility to use a wide range of AI providers.
 - **Self-Hosted Privacy:** All data remains on your infrastructure, enhancing security.
 - **Active Development:** Regular updates and a responsive community.
 - **Feature-Rich:** Includes advanced capabilities like agents, code execution, and image generation.
 
-### Cons:
+### Cons
+
 - **Self-Hosting Complexity:** Requires technical knowledge to deploy and maintain.
 - **Resource Intensive:** May demand significant computational resources, especially for multiple models or high usage.
 - **Dependency on External APIs:** Some features rely on third-party services, which may incur costs or have usage limits.
@@ -58,19 +60,22 @@ LibreChat boasts an extensive set of features, making it a versatile tool for AI
 
 Follow these steps to deploy LibreChat on an Ubuntu server (or similar Linux distribution). This guide assumes you have basic familiarity with the command line and Docker.
 
-### Prerequisites:
+### Prerequisites
+
 - Ubuntu 20.04 or later
 - Docker and Docker Compose installed
 - Node.js (v18 or higher) – optional for certain customizations
 - Git
 
 ### Step 1: Update System and Install Dependencies
+
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl git
 ```
 
 ### Step 2: Install Docker and Docker Compose
+
 ```bash
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -82,32 +87,41 @@ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 ### Step 3: Clone the LibreChat Repository
+
 ```bash
 git clone https://github.com/danny-avila/LibreChat.git
 cd LibreChat
 ```
 
 ### Step 4: Configure Environment Variables
+
 Copy the example environment file and customize it:
+
 ```bash
 cp .env.example .env
 nano .env
 ```
+
 Update key variables such as:
+
 - `OPENAI_API_KEY` (or keys for other providers like Anthropic, AWS, etc.)
 - `JWT_SECRET` for authentication
 - Database and Redis settings (if using external services)
 
 ### Step 5: Start the Application with Docker Compose
+
 ```bash
 docker-compose up -d
 ```
+
 This command will pull the necessary images and start LibreChat in detached mode.
 
 ### Step 6: Access LibreChat
+
 Once the containers are running, access the application at `http://your-server-ip:3080` (replace with your server's IP address). You can create an account and start using LibreChat immediately.
 
-### Additional Notes:
+### Additional Notes
+
 - For production use, consider using a reverse proxy (e.g., Nginx) with SSL.
 - Monitor resource usage, as AI models can be computationally intensive.
 - Regularly update the repository to benefit from the latest features and security patches.
