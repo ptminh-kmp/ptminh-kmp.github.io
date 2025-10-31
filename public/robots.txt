@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://minixium.com/sitemap-index.xml
