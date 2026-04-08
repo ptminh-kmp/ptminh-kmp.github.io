@@ -5,7 +5,6 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
 import expressiveCode from "astro-expressive-code";
-import keystatic from "@keystatic/astro";
 import react from "@astrojs/react";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
@@ -116,7 +115,6 @@ export default defineConfig({
         svelte(),
 		sitemap(),
 		react(),
-		...(process.env.NODE_ENV !== "production" ? [keystatic()] : []),
 	],
 	markdown: {
 		remarkPlugins: [

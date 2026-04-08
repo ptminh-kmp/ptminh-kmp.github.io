@@ -1,0 +1,37 @@
+backend:
+  name: github
+  repo: ptminh-kmp/ptminh-kmp.github.io
+  branch: main # Default branch
+
+media_folder: "public/images" # Folder where to upload images
+public_folder: "/images"
+
+collections:
+  - name: "posts"
+    label: "Posts"
+    folder: "src/content/posts"
+    create: true
+    slug: "{{title}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { 
+          label: "Language", 
+          name: "lang", 
+          widget: "select", 
+          options: [
+            { label: "Tiếng Việt", value: "vi" },
+            { label: "English", value: "en" }
+          ],
+          default: "vi"
+        }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Author", name: "author", widget: "string", default: "minhpt" }
+      - { label: "Publish Date", name: "published", widget: "datetime" }
+      - { label: "Update Date", name: "updated", widget: "datetime", required: false }
+      - { label: "Category", name: "category", widget: "string", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Image URL", name: "image", widget: "string", required: false }
+      - { label: "Draft", name: "draft", widget: "boolean", default: false }
+      - { label: "Content", name: "body", widget: "markdown" }
