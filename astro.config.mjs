@@ -32,10 +32,6 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 export default defineConfig({
 	output: "static",
 	adapter: node({ mode: "standalone" }),
-	build: {
-		client: "./dist",
-		server: "./dist-server",
-	},
 	i18n: {
 		defaultLocale: "vi",
 		locales: ["vi", "en"],
