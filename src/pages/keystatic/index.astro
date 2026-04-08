@@ -1,0 +1,8 @@
+---
+// src/pages/keystatic/index.astro
+export const prerender = true;
+
+import { KeystaticApp } from './_app';
+---
+
+<KeystaticApp client:only="react" />
