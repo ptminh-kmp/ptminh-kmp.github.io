@@ -1,12 +1,24 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import { getCategoryUrl } from "@utils/url-utils.ts";
+import { getCategoryUrl } from "@utils/url-utils";
+
+function getPostLang(post: any): string {
+    if (post.data.lang) return post.data.lang;
+    const firstSegment = post.id.split('/')[0];
+    if (firstSegment === 'en' || firstSegment === 'vi') return firstSegment;
+    return 'vi';
+}
 
 // // Retrieve posts and sort them by publication date
-async function getRawSortedPosts() {
-	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+async function getRawSortedPosts(lang?: string) {
+	const allBlogPosts = await getCollection("posts", ({ data, id }) => {
+		const isNotDraft = import.meta.env.PROD ? data.draft !== true : true;
+        if (!isNotDraft) return false;
+        if (lang) {
+            return getPostLang({ data, id }) === lang;
+        }
+        return true;
 	});
 
 	const sorted = allBlogPosts.sort((a, b) => {
@@ -17,8 +29,8 @@ async function getRawSortedPosts() {
 	return sorted;
 }
 
-export async function getSortedPosts() {
-	const sorted = await getRawSortedPosts();
+export async function getSortedPosts(lang?: string) {
+	const sorted = await getRawSortedPosts(lang);
 
 	for (let i = 1; i < sorted.length; i++) {
 		sorted[i].data.nextSlug = sorted[i - 1].slug;
@@ -35,8 +47,8 @@ export type PostForList = {
 	slug: string;
 	data: CollectionEntry<"posts">["data"];
 };
-export async function getSortedPostsList(): Promise<PostForList[]> {
-	const sortedFullPosts = await getRawSortedPosts();
+export async function getSortedPostsList(lang?: string): Promise<PostForList[]> {
+	const sortedFullPosts = await getRawSortedPosts(lang);
 
 	// delete post.body
 	const sortedPostsList = sortedFullPosts.map((post) => ({
@@ -51,16 +63,21 @@ export type Tag = {
 	count: number;
 };
 
-export async function getTagList(): Promise<Tag[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+export async function getTagList(lang?: string): Promise<Tag[]> {
+	const allBlogPosts = await getCollection<"posts">("posts", ({ data, id }) => {
+		const isNotDraft = import.meta.env.PROD ? data.draft !== true : true;
+        if (!isNotDraft) return false;
+        if (lang) {
+            return getPostLang({ data, id }) === lang;
+        }
+        return true;
 	});
 
 	const countMap: { [key: string]: number } = {};
-	allBlogPosts.map((post: { data: { tags: string[] } }) => {
-		post.data.tags.map((tag: string) => {
+	allBlogPosts.forEach((post) => {
+		post.data.tags.forEach((tag: string) => {
 			if (!countMap[tag]) countMap[tag] = 0;
-			countMap[tag]++;
+			countMap[tag]++
 		});
 	});
 
@@ -78,14 +95,19 @@ export type Category = {
 	url: string;
 };
 
-export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+export async function getCategoryList(lang?: string): Promise<Category[]> {
+	const allBlogPosts = await getCollection<"posts">("posts", ({ data, id }) => {
+		const isNotDraft = import.meta.env.PROD ? data.draft !== true : true;
+        if (!isNotDraft) return false;
+        if (lang) {
+            return getPostLang({ data, id }) === lang;
+        }
+        return true;
 	});
 	const count: { [key: string]: number } = {};
-	allBlogPosts.map((post: { data: { category: string | null } }) => {
+	allBlogPosts.map((post) => {
 		if (!post.data.category) {
-			const ucKey = i18n(I18nKey.uncategorized);
+			const ucKey = i18n(I18nKey.uncategorized, lang);
 			count[ucKey] = count[ucKey] ? count[ucKey] + 1 : 1;
 			return;
 		}
@@ -107,7 +129,7 @@ export async function getCategoryList(): Promise<Category[]> {
 		ret.push({
 			name: c,
 			count: count[c],
-			url: getCategoryUrl(c),
+			url: getCategoryUrl(c, lang),
 		});
 	}
 	return ret;

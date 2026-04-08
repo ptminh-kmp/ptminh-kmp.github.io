@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "LizardByte/Sunshine: The Ultimate Self-Hosted Game Streaming Solution"
 description: "Discover LizardByte/Sunshine, an open-source game streaming host that replaces proprietary services. Learn installation, features, and benefits."
 published: 2025-09-11

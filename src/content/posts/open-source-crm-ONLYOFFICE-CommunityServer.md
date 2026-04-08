@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "ONLYOFFICE CommunityServer: A Free Open-Source Office Suite Alternative"
 description: "Discover ONLYOFFICE CommunityServer, a powerful open-source office suite with document management, CRM, and mail aggregation."
 published: 2025-08-15

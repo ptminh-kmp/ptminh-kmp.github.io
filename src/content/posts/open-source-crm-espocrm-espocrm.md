@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "EspoCRM Review – A Powerful Open Source CRM Alternative"
 description: "Discover EspoCRM, an open-source, self-hosted CRM solution that rivals commercial platforms. Learn its features, pros & cons, and how to install it."
 published: 2025-08-19

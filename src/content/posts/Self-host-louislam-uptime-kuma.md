@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Uptime Kuma: The Ultimate Self-Hosted Monitoring Solution"
 description: "Discover Uptime Kuma, a powerful open-source monitoring tool with 73k+ GitHub stars. Learn how to self-host it and replace commercial alternatives."
 published: 2025-08-28

@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Awesome Self-Hosted: The Ultimate Open Source Self-Hosting Resource Guide"
 description: "Explore awesome-selfhosted/awesome-selfhosted - the comprehensive GitHub repository with 243k+ stars featuring free software for self-hosting alternatives to popular services."
 published: 2025-08-24

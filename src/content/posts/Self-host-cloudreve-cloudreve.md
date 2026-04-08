@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Cloudreve: The Ultimate Self-Hosted File Management and Sharing System"
 description: "Explore Cloudreve, an open-source self-hosted file management solution with multi-storage support, offering a seamless alternative to commercial cloud services."
 published: 2025-09-15

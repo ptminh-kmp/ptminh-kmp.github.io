@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "usememos/memos: The Ultimate Self-Hosted Knowledge Management Platform"
 description: "A detailed review of usememos/memos, an open-source, self-hosted note-taking platform with 43k+ GitHub stars. Features, pros/cons, and installation guide."
 published: 2025-09-02

@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "WebVella ERP: Open-Source Business Management Platform Review"
 description: "Comprehensive review of WebVella ERP - a free, open-source pluggable ERP and CRM solution built on ASP.NET Core 9, RazorPages, and PostgreSQL."
 published: 2025-09-23

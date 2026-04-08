@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Metasfresh ERP: A Comprehensive Review of the Open Source Business Management Solution"
 description: "Explore metasfresh, a powerful open-source ERP system designed for business scalability. Learn about its features, installation, and how it compares to commercial alternatives."
 published: 2025-08-21

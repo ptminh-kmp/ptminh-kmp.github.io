@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "chaitin/SafeLine: A Comprehensive Guide to Self-Hosted Web Application Firewall"
 description: "Explore chaitin/SafeLine, an open-source self-hosted WAF that protects web applications from attacks. Learn about its features, installation, and alternatives."
 published: 2025-09-22

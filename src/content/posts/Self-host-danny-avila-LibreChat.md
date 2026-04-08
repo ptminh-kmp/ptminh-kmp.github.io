@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "LibreChat: The Ultimate Open-Source ChatGPT Alternative for Self-Hosting"
 description: Discover LibreChat, an enhanced ChatGPT clone with multi-model support, secure authentication, and powerful AI features for self-hosting. Perfect for developers and enterprises.
 published: 2025-09-09

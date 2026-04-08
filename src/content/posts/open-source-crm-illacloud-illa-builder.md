@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Illa Builder: The Open-Source Low-Code Platform for Business Apps"
 description: "Discover Illa Builder, an open-source low-code platform for building internal tools, dashboards, and CRUD apps. Supports PostgreSQL, MySQL, Supabase, and more."
 published: 2025-08-10

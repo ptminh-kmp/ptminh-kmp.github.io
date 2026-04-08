@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Coolify Review: The Ultimate Self-Hosted Alternative to Heroku, Netlify, and Vercel"
 description: "Explore Coolify, an open-source platform for self-hosting applications. Replace Heroku, Netlify, and Vercel with full control over your deployments."
 published: 2025-09-01

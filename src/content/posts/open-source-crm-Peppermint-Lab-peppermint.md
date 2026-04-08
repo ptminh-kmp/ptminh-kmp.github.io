@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Peppermint: An Open-Source Alternative to Zendesk & Jira for Issue Management"
 description: "Discover Peppermint, a self-hosted issue management and help desk solution that rivals Zendesk and Jira. Learn its features, pros, cons, and how to deploy it."
 published: 2025-08-17

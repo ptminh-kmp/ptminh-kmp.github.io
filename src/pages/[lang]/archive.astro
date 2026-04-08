@@ -13,7 +13,7 @@ export function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
-const allPosts = await getSortedPostsList();
+const allPosts = await getSortedPostsList(lang);
 const sortedPostsList = allPosts;
 ---
 

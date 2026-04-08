@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Immich Review: The Ultimate Self-Hosted Photo & Video Management Solution"
 description: "Explore Immich, the open-source, self-hosted alternative to Google Photos with 74k+ GitHub stars. Learn features, installation, and pros/cons."
 published: 2025-08-27

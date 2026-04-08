@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Headscale: The Self-Hosted Tailscale Control Server You Need in 2025"
 description: "Explore juanfont/headscale, an open-source, self-hosted alternative to Tailscale's control server. Learn features, installation, and benefits."
 published: 2025-09-08

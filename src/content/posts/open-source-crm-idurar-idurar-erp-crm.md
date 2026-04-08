@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Idurar ERP CRM – A Free Open-Source Business Management Solution"
 description: "Discover Idurar ERP CRM, a powerful open-source business management platform built with Node.js and React. Perfect for self-hosting."
 published: 2025-08-11

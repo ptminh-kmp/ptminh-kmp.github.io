@@ -15,10 +15,13 @@ import { profileConfig, siteConfig } from "../../../config";
 import { formatDateToYYYYMMDD } from "../../../utils/date-utils";
 
 export async function getStaticPaths() {
-	const blogEntries = await getSortedPosts();
+	const blogEntriesEn = await getSortedPosts("en");
+	const blogEntriesVi = await getSortedPosts("vi");
 	const result = [];
-	for (const entry of blogEntries) {
+	for (const entry of blogEntriesEn) {
 		result.push({ params: { lang: "en", slug: entry.slug }, props: { entry } });
+	}
+	for (const entry of blogEntriesVi) {
 		result.push({ params: { lang: "vi", slug: entry.slug }, props: { entry } });
 	}
 	return result;

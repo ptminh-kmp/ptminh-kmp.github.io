@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "TabbyML/tabby: A Comprehensive Guide to Self-Hosted AI Coding Assistance"
 description: "Explore TabbyML/tabby, the open-source, self-hosted AI coding assistant with 31,998 GitHub stars. Learn how to deploy and use it as an alternative to commercial tools."
 published: 2025-09-06

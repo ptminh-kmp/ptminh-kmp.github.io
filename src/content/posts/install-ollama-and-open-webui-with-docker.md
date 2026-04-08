@@ -1,4 +1,5 @@
 ---
+lang: en
 title: Setting up Open WebUI with Ollama & Docker Desktop
 description: >-
   Learn how to setup Open WebUI with Ollama and Docker Desktop for local AI model interaction. This step-by-step tutorial is perfect for AI developers and bloggers.

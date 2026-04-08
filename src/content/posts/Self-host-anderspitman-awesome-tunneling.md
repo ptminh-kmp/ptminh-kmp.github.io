@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Anderspitman/awesome-tunneling: The Ultimate Self-Hosted Tunneling Resource"
 description: "Explore anderspitman/awesome-tunneling, a curated list of ngrok and Cloudflare Tunnel alternatives for secure, self-hosted tunneling solutions."
 published: 2025-09-20

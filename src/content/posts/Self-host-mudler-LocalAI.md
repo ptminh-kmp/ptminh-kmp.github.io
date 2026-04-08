@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "LocalAI: The Ultimate Self-Hosted Alternative to OpenAI and Claude"
 description: "Explore mudler/LocalAI, the open-source, self-hosted AI platform that runs on consumer hardware without GPU requirements. Full review and installation guide."
 published: 2025-09-05

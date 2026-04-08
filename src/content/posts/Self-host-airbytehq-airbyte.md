@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Airbyte: The Ultimate Open-Source Data Integration Platform for ETL/ELT"
 description: "Comprehensive review of Airbyte - the leading open-source data integration platform for building ETL/ELT pipelines from APIs, databases, and files to data warehouses and lakes."
 published: 2025-09-18

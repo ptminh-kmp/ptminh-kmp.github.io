@@ -7,10 +7,11 @@ import MainGridLayout from "../../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../../utils/content-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
-	const allBlogPosts = await getSortedPosts();
+	const allBlogPostsEn = await getSortedPosts("en");
+	const allBlogPostsVi = await getSortedPosts("vi");
 	const result = [];
-	result.push(...paginate(allBlogPosts, { params: { lang: "en" }, pageSize: PAGE_SIZE }));
-	result.push(...paginate(allBlogPosts, { params: { lang: "vi" }, pageSize: PAGE_SIZE }));
+	result.push(...paginate(allBlogPostsEn, { params: { lang: "en" }, pageSize: PAGE_SIZE }));
+	result.push(...paginate(allBlogPostsVi, { params: { lang: "vi" }, pageSize: PAGE_SIZE }));
 	return result;
 }) satisfies GetStaticPaths;
 // https://github.com/withastro/astro/issues/6507#issuecomment-1489916992

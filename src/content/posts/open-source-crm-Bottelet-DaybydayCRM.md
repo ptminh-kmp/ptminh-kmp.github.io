@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "DaybydayCRM: A Powerful Open-Source CRM for Daily Workflow Management"
 description: "Discover DaybydayCRM, an open-source customer relationship management tool designed to streamline daily workflows and improve productivity."
 published: 2025-08-18

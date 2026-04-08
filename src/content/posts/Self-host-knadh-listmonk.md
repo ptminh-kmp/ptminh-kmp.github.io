@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "knadh/listmonk: The Ultimate Self-Hosted Newsletter Management Solution"
 description: "Explore knadh/listmonk, a high-performance, self-hosted newsletter manager with modern dashboard. Perfect alternative to Mailchimp and Sendy."
 published: 2025-09-21

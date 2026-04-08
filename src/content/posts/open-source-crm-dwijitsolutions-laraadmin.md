@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "LaraAdmin: The Ultimate Open-Source Laravel Admin Panel & CMS Solution"
 description: "Comprehensive review of dwijitsolutions/laraadmin - an open-source Laravel admin panel with CRUD generation, module management, and self-hosting capabilities."
 published: 2025-08-22

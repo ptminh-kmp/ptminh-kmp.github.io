@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Khoj AI: Your Self-Hosted AI Second Brain - A Complete Review"
 description: "Explore Khoj AI, an open-source, self-hosted AI assistant that acts as your second brain, offering web and document search, automation, and deep research capabilities."
 published: 2025-09-07

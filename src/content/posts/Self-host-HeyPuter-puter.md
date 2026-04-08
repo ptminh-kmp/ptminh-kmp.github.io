@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "HeyPuter/puter: The Ultimate Open-Source Internet OS for Self-Hosting"
 description: "Explore HeyPuter/puter, a free, open-source Internet OS with 35K+ GitHub stars. Learn its features, pros, cons, and how to self-host it on Ubuntu."
 published: 2025-09-04

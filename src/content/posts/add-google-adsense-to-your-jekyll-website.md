@@ -1,4 +1,5 @@
 ---
+lang: en
 title: >- 
   💰 Monetize Your Jekyll Site 💰: A Step-by-Step Guide to Adding Google AdSense
 description: >-

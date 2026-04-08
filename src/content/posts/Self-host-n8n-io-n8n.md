@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "n8n-io/n8n: The Ultimate Fair-Code Workflow Automation Platform"
 description: "Explore n8n-io/n8n, a powerful fair-code workflow automation tool with native AI capabilities, 400+ integrations, and self-hosting options."
 published: 2025-08-25

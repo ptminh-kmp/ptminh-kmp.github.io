@@ -1,4 +1,5 @@
 ---
+lang: en
 title: MuleSoft tutorial for everyone (Part 1)
 description: >-
   Master MuleSoft with this beginner-friendly tutorial! Learn API integration, Anypoint Studio & more—perfect for developers & students. Start now!

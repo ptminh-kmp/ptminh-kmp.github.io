@@ -1,4 +1,5 @@
 ---
+lang: en
 title: Add Google Analytics to your Jekyll website using the Chirpy theme
 description: >-
   Let's break down how to add Google Analytics to your Jekyll website using the Chirpy theme. This tutorial will cover everything from setting up your Google Analytics account to verifying the tracking code.

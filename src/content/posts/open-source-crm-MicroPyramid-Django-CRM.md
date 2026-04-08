@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "MicroPyramid/Django-CRM: The Ultimate Open-Source CRM Solution for Django Developers"
 description: "Comprehensive review of MicroPyramid/Django-CRM - an open-source CRM built on Django. Features, installation guide, pros and cons for self-hosting."
 published: 2025-08-20

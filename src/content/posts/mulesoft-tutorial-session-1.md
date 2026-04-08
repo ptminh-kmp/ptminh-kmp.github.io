@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "MuleSoft Tutorial for Beginners [Part 1]: From Spaghetti Chaos to Modern Integration (ESB, API Gateway & MuleSoft Explained)"
 published: 2025-03-25
 category: Integration

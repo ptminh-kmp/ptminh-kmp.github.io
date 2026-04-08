@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "KaraKeep: The Ultimate Self-Hosted Bookmarking App with AI Tagging"
 description: "Discover KaraKeep, a powerful self-hostable bookmarking solution with AI-based tagging, full-text search, and support for links, notes, and images."
 published: 2025-09-17

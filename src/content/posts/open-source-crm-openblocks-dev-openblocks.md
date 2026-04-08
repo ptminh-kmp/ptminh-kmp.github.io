@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "OpenBlocks: The Open-Source Retool Alternative for Building Internal Tools"
 description: "Discover OpenBlocks, a powerful open-source alternative to Retool for creating internal tools with ease. Learn its features, pros, cons, and how to self-host."
 published: 2025-08-12

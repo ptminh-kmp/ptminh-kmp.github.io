@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "PostHog: The Ultimate Open-Source Alternative to Product Analytics and A/B Testing"
 description: "Explore PostHog, the open-source platform offering web analytics, session recording, feature flagging, and A/B testing that you can self-host for free."
 published: 2025-09-10

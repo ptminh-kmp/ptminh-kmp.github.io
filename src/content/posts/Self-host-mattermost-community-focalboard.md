@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Focalboard Review: The Ultimate Open-Source Alternative to Trello and Notion"
 description: "Discover Focalboard, the self-hosted project management tool with 24K+ GitHub stars. Learn how it compares to Trello, Notion, and Asana, and how to deploy it."
 published: 2025-09-13

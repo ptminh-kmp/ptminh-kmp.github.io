@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "MuleSoft Tutorial [Part 2]: Setting Up Your Anypoint Studio Development Environment"
 published: 2025-03-25
 category: Integration

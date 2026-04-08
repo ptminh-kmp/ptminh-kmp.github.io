@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Siyuan Note: The Ultimate Open Source, Self-Hosted Knowledge Management System"
 description: "Explore Siyuan Note, a privacy-first, open source knowledge management software that rivals commercial alternatives. Learn how to self-host it on Linux."
 published: 2025-09-03

@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Gitea: The Ultimate Self-Hosted Git Solution - Complete Review and Setup Guide"
 description: "Explore Gitea, the open-source Git hosting platform with 50k+ GitHub stars. Learn how to self-host your own GitHub alternative with our detailed installation guide."
 published: 2025-08-29

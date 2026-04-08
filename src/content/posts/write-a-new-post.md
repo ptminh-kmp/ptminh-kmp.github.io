@@ -1,4 +1,5 @@
 ---
+lang: en
 title: Writing a New Post
 author: minhpt
 description: >-

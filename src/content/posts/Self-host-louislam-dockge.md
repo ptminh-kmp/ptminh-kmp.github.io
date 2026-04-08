@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Dockge: A Modern Self-Hosted Docker Compose Manager - Complete Review & Setup Guide"
 description: "Explore louislam/dockge, a reactive and user-friendly self-hosted Docker Compose manager with 19K+ GitHub stars. Learn installation, features, and alternatives."
 published: 2025-09-19

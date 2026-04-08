@@ -5,8 +5,11 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
 import expressiveCode from "astro-expressive-code";
+import keystatic from "@keystatic/astro";
+import react from "@astrojs/react";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
+import node from "@astrojs/node";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeComponents from "rehype-components"; /* Render the custom directive content */
 import rehypeKatex from "rehype-katex";
@@ -27,6 +30,8 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
+	output: process.env.NODE_ENV === "development" ? "server" : "static",
+	adapter: process.env.NODE_ENV === "development" ? node({ mode: "standalone" }) : undefined,
 	i18n: {
 		defaultLocale: "vi",
 		locales: ["vi", "en"],
@@ -110,6 +115,8 @@ export default defineConfig({
 		}),
         svelte(),
 		sitemap(),
+		react(),
+		keystatic(),
 	],
 	markdown: {
 		remarkPlugins: [

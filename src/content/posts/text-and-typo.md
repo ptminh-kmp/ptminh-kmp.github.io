@@ -1,4 +1,5 @@
 ---
+lang: en
 title: Text and Typography in Jekyll
 description: Examples of text, typography, math equations, diagrams, flowcharts, pictures, videos, and more.
 author: minhpt

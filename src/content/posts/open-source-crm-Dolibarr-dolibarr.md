@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Dolibarr ERP CRM – A Complete Open-Source Business Management Solution"
 description: "Discover Dolibarr, an open-source ERP and CRM system for businesses of all sizes. Learn its features, pros & cons, and how to self-host it."
 published: 2025-08-13

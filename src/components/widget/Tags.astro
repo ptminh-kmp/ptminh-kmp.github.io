@@ -7,7 +7,7 @@ import { getTagUrl } from "../../utils/url-utils";
 import ButtonTag from "../control/ButtonTag.astro";
 import WidgetLayout from "./WidgetLayout.astro";
 
-const tags = await getTagList();
+const tags = await getTagList(Astro.currentLocale);
 
 const COLLAPSED_HEIGHT = "7.5rem";
 

@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "NocoBase Review: The Open-Source No-Code/Low-Code Platform for Business Applications"
 description: "Explore NocoBase, an open-source no-code/low-code platform for building business applications. Learn about its features, pros & cons, and how to self-host it."
 published: 2025-08-29

@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Mastodon: The Ultimate Guide to Self-Hosted, Decentralized Social Networking"
 description: "Explore Mastodon, the open-source, self-hosted microblogging platform that offers a decentralized alternative to mainstream social media networks."
 published: 2025-08-30

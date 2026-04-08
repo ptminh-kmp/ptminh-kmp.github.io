@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "InvoicePlane: A Powerful Open-Source Invoicing Solution for Self-Hosting"
 description: "Explore InvoicePlane, an open-source self-hosted invoicing and payment management system that replaces commercial alternatives."
 published: 2025-08-16

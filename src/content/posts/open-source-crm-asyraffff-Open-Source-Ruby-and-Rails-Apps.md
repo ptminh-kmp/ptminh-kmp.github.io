@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Open-Source Ruby and Rails Apps: A Comprehensive Collection for Developers"
 description: "Explore asyraffff's curated list of awesome open-source Ruby and Rails applications. Perfect for developers looking to learn, contribute, or find alternatives to commercial software."
 published: 2025-09-23

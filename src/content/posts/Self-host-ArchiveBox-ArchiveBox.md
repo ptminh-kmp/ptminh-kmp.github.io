@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "ArchiveBox/ArchiveBox: The Ultimate Self-Hosted Web Archiving Solution"
 description: "Explore ArchiveBox/ArchiveBox, an open-source self-hosted tool for archiving web content, including HTML, PDFs, media, and more. Perfect for data preservation."
 published: 2025-09-14

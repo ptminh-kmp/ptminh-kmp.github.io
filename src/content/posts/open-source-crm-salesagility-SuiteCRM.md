@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "SuiteCRM Review: The Open-Source Alternative to Salesforce"
 description: "Discover SuiteCRM, a powerful open-source CRM solution that rivals commercial platforms like Salesforce. Learn about its features, pros & cons, and how to self-host it."
 published: 2025-08-14

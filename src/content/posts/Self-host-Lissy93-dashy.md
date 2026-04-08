@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Lissy93/dashy: The Ultimate Self-Hosted Personal Dashboard - Review & Setup Guide"
 description: "Explore Lissy93/dashy, a powerful open-source personal dashboard with widgets, themes, and status monitoring. Perfect for self-hosting enthusiasts."
 published: 2025-09-16

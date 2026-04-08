@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "RustDesk: The Ultimate Open-Source Remote Desktop Solution for Self-Hosting"
 description: "Discover RustDesk, the powerful open-source remote desktop application with 96k+ GitHub stars. Learn how to self-host it as a TeamViewer alternative."
 published: 2025-08-26

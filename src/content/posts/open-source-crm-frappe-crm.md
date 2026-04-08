@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Frappe CRM: A Comprehensive Review of the Open Source CRM Solution"
 description: "Explore Frappe CRM, a fully-featured open source CRM built on Frappe Framework. Learn about its features, installation, and how it compares to commercial alternatives."
 published: 2025-08-23

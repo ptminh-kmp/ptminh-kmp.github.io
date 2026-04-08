@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "Gogs: The Ultimate Self-Hosted Git Service - Complete Guide"
 description: "Explore Gogs, the lightweight, painless self-hosted Git service. Learn how to deploy, features, pros and cons, and why it's a top alternative to GitHub."
 published: 2025-08-31

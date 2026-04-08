@@ -1,4 +1,5 @@
 ---
+lang: en
 title: "GlanceApp/Glance: The Ultimate Self-Hosted Dashboard for All Your Feeds"
 description: "Discover glanceapp/glance, a powerful self-hosted dashboard that centralizes all your feeds. Learn its features, pros, cons, and how to install it."
 published: 2025-09-12
