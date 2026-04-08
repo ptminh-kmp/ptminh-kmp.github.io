@@ -27,6 +27,14 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
+	i18n: {
+		defaultLocale: "vi",
+		locales: ["vi", "en"],
+		routing: {
+			prefixDefaultLocale: true,
+			redirectToDefaultLocale: true,
+		}
+	},
 	site: "https://minixium.com",
 	base: "/",
 	trailingSlash: "always",

@@ -59,7 +59,7 @@ const favicons: Favicon[] =
 
 // const siteLang = siteConfig.lang.replace('_', '-')
 if (!lang) {
-	lang = `${siteConfig.lang}`;
+	lang = Astro.currentLocale || `${siteConfig.lang}`;
 }
 const siteLang = lang.replace("_", "-");
 

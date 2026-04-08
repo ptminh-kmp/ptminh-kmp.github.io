@@ -1,4 +1,6 @@
 ---
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
 import { Icon } from "astro-icon/components";
 import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
@@ -33,11 +35,17 @@ let links: NavBarLink[] = navBarConfig.links.map(
         </a>
         <div class="hidden md:flex">
             {links.map((l) => {
-                return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                let linkName = l.name;
+                if (l.name === 'Trang chủ' || l.name === 'Home') linkName = i18n(I18nKey.home, Astro.currentLocale);
+                else if (l.name === 'Giới thiệu' || l.name === 'About') linkName = i18n(I18nKey.about, Astro.currentLocale);
+                else if (l.name === 'Kho bài' || l.name === 'Archive') linkName = i18n(I18nKey.archive, Astro.currentLocale);
+                else if (l.name === 'Sản phẩm' || l.name === 'Product') linkName = i18n(I18nKey.product, Astro.currentLocale);
+
+                return <a aria-label={linkName} href={l.external ? l.url : url(l.url, Astro.currentLocale)} target={l.external ? "_blank" : null}
                           class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
                 >
                     <div class="flex items-center">
-                        {l.name}
+                        {linkName}
                         {l.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]"></Icon>}
                     </div>
                 </a>;
@@ -52,6 +60,9 @@ let links: NavBarLink[] = navBarConfig.links.map(
                     </button>
             )}
             <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
+            <a data-no-swup href={`/${Astro.currentLocale === 'vi' ? 'en' : 'vi'}${Astro.url.pathname.replace(/^\/(vi|en)/, '')}`} aria-label="Language Mode" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 flex items-center justify-center">
+                <div class="font-bold text-[1rem]">{Astro.currentLocale === 'vi' ? 'EN' : 'VI'}</div>
+            </a>
             <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>

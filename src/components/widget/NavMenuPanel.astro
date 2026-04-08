@@ -2,6 +2,8 @@
 import { Icon } from "astro-icon/components";
 import { type NavBarLink } from "../../types/config";
 import { url } from "../../utils/url-utils";
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
 
 interface Props {
 	links: NavBarLink[];
@@ -11,13 +13,16 @@ const links = Astro.props.links;
 ---
 <div id="nav-menu-panel" class:list={["float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"]}>
     {links.map((link) => (
-        <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+        <a href={link.external ? link.url : url(link.url, Astro.currentLocale)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
             hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
         "
            target={link.external ? "_blank" : null}
         >
             <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
-                {link.name}
+                {link.name === 'Trang chủ' || link.name === 'Home' ? i18n(I18nKey.home, Astro.currentLocale) : 
+                 link.name === 'Giới thiệu' || link.name === 'About' ? i18n(I18nKey.about, Astro.currentLocale) : 
+                 link.name === 'Kho bài' || link.name === 'Archive' ? i18n(I18nKey.archive, Astro.currentLocale) : 
+                 link.name === 'Sản phẩm' || link.name === 'Product' ? i18n(I18nKey.product, Astro.currentLocale) : link.name}
             </div>
             {!link.external && <Icon name="material-symbols:chevron-right-rounded"
                   class="transition text-[1.25rem] text-[var(--primary)]"

@@ -37,7 +37,16 @@ export function getTranslation(lang: string): Translation {
 	return map[lang.toLowerCase()] || defaultTranslation;
 }
 
-export function i18n(key: I18nKey): string {
-	const lang = siteConfig.lang || "en";
+export function i18n(key: I18nKey, langOverride?: string): string {
+    let lang = siteConfig.lang || "en";
+    if (typeof window !== "undefined") {
+        const path = window.location.pathname;
+        if (path.indexOf("/en/") === 0) lang = "en";
+        else if (path.indexOf("/vi/") === 0) lang = "vi";
+
+    }
+    if (langOverride) {
+        lang = langOverride;
+    }
 	return getTranslation(lang)[key];
 }
