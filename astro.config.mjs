@@ -33,8 +33,8 @@ export default defineConfig({
 	output: "static",
 	adapter: node({ mode: "standalone" }),
 	build: {
-		client: new URL("./dist", import.meta.url),
-		server: new URL("./dist-server", import.meta.url),
+		client: "./dist",
+		server: "./dist-server",
 	},
 	i18n: {
 		defaultLocale: "vi",
