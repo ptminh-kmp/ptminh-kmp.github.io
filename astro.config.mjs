@@ -30,8 +30,8 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-	output: process.env.NODE_ENV === "development" ? "server" : "static",
-	adapter: process.env.NODE_ENV === "development" ? node({ mode: "standalone" }) : undefined,
+	output: "hybrid",
+	adapter: node({ mode: "standalone" }),
 	i18n: {
 		defaultLocale: "vi",
 		locales: ["vi", "en"],
