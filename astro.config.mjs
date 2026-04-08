@@ -116,7 +116,10 @@ export default defineConfig({
         svelte(),
 		sitemap(),
 		react(),
-		keystatic(),
+		keystatic({
+			// Thêm dòng này để dùng dấu # cho URL admin
+			ui: { routerKind: 'hash' }
+		}),
 	],
 	markdown: {
 		remarkPlugins: [
