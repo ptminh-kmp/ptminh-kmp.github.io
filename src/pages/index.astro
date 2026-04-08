@@ -1,3 +1,13 @@
 ---
-return Astro.redirect(`/vi/`);
+export const prerender = true;
 ---
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta http-equiv="refresh" content="0;url=/vi/" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    If you are not redirected automatically, follow this <a href="/vi/">link to the website</a>.
+  </body>
+</html>
