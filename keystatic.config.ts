@@ -14,7 +14,7 @@ export default config({
     posts: collection({
       label: 'Posts',
       slugField: 'title',
-      path: 'src/content/posts/*',
+      path: './src/content/posts/*',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -34,7 +34,7 @@ export default config({
         tags: fields.array(fields.text({ label: 'Tag' }), { label: 'Tags', itemLabel: (props: any) => props.value }),
         image: fields.text({ label: 'Image URL' }),
         draft: fields.checkbox({ label: 'Draft', defaultValue: false }),
-        content: fields.markdoc({ label: 'Content' }),
+        content: fields.markdoc({ label: 'Content', extension: 'md' }),
       },
     }),
   },

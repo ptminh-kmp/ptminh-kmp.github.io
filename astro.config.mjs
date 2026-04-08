@@ -42,7 +42,7 @@ export default defineConfig({
 	},
 	site: "https://minixium.com",
 	base: "/",
-	trailingSlash: "always",
+	trailingSlash: "ignore",
 	integrations: [
 		tailwind({
 			nesting: true,
