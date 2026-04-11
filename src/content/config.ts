@@ -19,6 +19,21 @@ const postsCollection = defineCollection({
 		nextSlug: z.string().default(""),
 	}),
 });
+
+const productsCollection = defineCollection({
+	schema: z.object({
+		title: z.string(),
+		description: z.string(),
+		image: z.string(),
+		price: z.number(),
+		category: z.string().optional(),
+		tags: z.array(z.string()).optional().default([]),
+		draft: z.boolean().optional().default(false),
+		lang: z.string().optional().default(""),
+	}),
+});
+
 export const collections = {
 	posts: postsCollection,
+	products: productsCollection,
 };

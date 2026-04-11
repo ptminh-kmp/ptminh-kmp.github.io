@@ -1,0 +1,68 @@
+---
+import { getCollection, render } from "astro:content";
+import Markdown from "@components/misc/Markdown.astro";
+import MainGridLayout from "../../../layouts/MainGridLayout.astro";
+
+export async function getStaticPaths() {
+	const products = await getCollection("products");
+	
+	return products.flatMap((product) => [
+		{
+			params: { lang: "en", slug: product.slug },
+			props: { product },
+		},
+		{
+			params: { lang: "vi", slug: product.slug },
+			props: { product },
+		},
+	]);
+}
+
+const { product } = Astro.props;
+const { Content } = await render(product);
+---
+
+<MainGridLayout title={product.data.title} description={product.data.description}>
+	<article class="w-full">
+		{product.data.image && (
+			<div class="w-full h-96 rounded-[var(--radius-large)] overflow-hidden mb-8">
+				<img 
+					src={product.data.image} 
+					alt={product.data.title}
+					class="w-full h-full object-cover"
+				/>
+			</div>
+		)}
+		
+		<div class="card-base rounded-[var(--radius-large)] p-9">
+			<h1 class="text-4xl font-bold mb-4">{product.data.title}</h1>
+			
+			<div class="flex justify-between items-center mb-8 pb-8 border-b">
+				<span class="text-3xl font-bold text-blue-500">
+					${product.data.price}
+				</span>
+				{product.data.category && (
+					<span class="text-sm bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded">
+						{product.data.category}
+					</span>
+				)}
+			</div>
+			
+			<Markdown>
+				<Content />
+			</Markdown>
+			
+			{product.data.tags && product.data.tags.length > 0 && (
+				<div class="mt-8 pt-8 border-t">
+					<div class="flex flex-wrap gap-2">
+						{product.data.tags.map((tag) => (
+							<span class="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
+								{tag}
+							</span>
+						))}
+					</div>
+				</div>
+			)}
+		</div>
+	</article>
+</MainGridLayout>

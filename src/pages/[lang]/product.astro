@@ -1,10 +1,8 @@
 ---
-
-import { getEntry, render } from "astro:content";
-import Markdown from "@components/misc/Markdown.astro";
+import { getCollection } from "astro:content";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
-import MainGridLayout from "../../layouts/MainGridLayout.astro";
 
 export function getStaticPaths() {
 	return [
@@ -13,21 +11,48 @@ export function getStaticPaths() {
 	];
 }
 
-
-const productPost = await getEntry("spec", "product");
-
-if (!productPost) {
-	throw new Error("product page content not found");
-}
-
-const { Content } = await render(productPost);
+const lang = Astro.params.lang;
+const products = await getCollection("products", ({ data }) => {
+	return !data.draft && (data.lang === "" || data.lang === lang);
+});
 ---
-<MainGridLayout title={i18n(I18nKey.product, Astro.currentLocale)} description={i18n(I18nKey.product, Astro.currentLocale)}>
-    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-        <div class="card-base z-10 px-9 py-6 relative w-full ">
-            <Markdown class="mt-2">
-                <Content />
-            </Markdown>
-        </div>
-    </div>
+
+<MainGridLayout 
+	title={i18n(I18nKey.product, Astro.currentLocale)} 
+	description={i18n(I18nKey.product, Astro.currentLocale)}
+>
+	<div class="w-full">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			{products.map((product) => (
+				<a 
+					href={`/${lang}/products/${product.slug}`}
+					class="card-base rounded-[var(--radius-large)] overflow-hidden hover:shadow-lg transition-shadow"
+				>
+					{product.data.image && (
+						<div class="w-full h-48 overflow-hidden">
+							<img 
+								src={product.data.image} 
+								alt={product.data.title}
+								class="w-full h-full object-cover hover:scale-105 transition-transform"
+							/>
+						</div>
+					)}
+					<div class="p-6">
+						<h3 class="text-lg font-bold mb-2">{product.data.title}</h3>
+						<p class="text-sm opacity-75 mb-4 line-clamp-2">{product.data.description}</p>
+						<div class="flex justify-between items-center">
+							<span class="text-xl font-bold text-blue-500">
+								${product.data.price}
+							</span>
+							{product.data.category && (
+								<span class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+									{product.data.category}
+								</span>
+							)}
+						</div>
+					</div>
+				</a>
+			))}
+		</div>
+	</div>
 </MainGridLayout>
