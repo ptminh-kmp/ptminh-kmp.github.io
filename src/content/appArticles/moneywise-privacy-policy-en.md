@@ -4,7 +4,7 @@ app: moneywise
 lang: en
 description: Privacy policy for MoneyWise app
 published: 2024-01-01
-updated: ''
+updated: 2026-04-13T06:34:00
 category: ''
 tags:
   - privacy
