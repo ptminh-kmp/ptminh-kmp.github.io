@@ -66,3 +66,32 @@ collections:
         }
       - { label: "Draft", name: "draft", widget: "boolean", default: false }
       - { label: "Content", name: "body", widget: "markdown" }
+
+  - name: "appArticles"
+    label: "App Articles"
+    folder: "src/content/appArticles"
+    create: true
+    slug: "{{app}}-{{title}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "App Name", name: "app", widget: "string" }
+      - { 
+          label: "Language", 
+          name: "lang", 
+          widget: "select", 
+          options: [
+            { label: "Tiếng Việt", value: "vi" },
+            { label: "English", value: "en" }
+          ],
+          default: "vi"
+        }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Publish Date", name: "published", widget: "datetime" }
+      - { label: "Update Date", name: "updated", widget: "datetime", required: false }
+      - { label: "Category", name: "category", widget: "string", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false, field: { label: "Tag", name: "tag", widget: "string" } }
+      - { label: "Image URL", name: "image", widget: "string", required: false }
+      - { label: "Draft", name: "draft", widget: "boolean", default: false }
+      - { label: "Content", name: "body", widget: "markdown" }
