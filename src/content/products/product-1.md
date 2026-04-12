@@ -4,11 +4,16 @@ description: "A cross-platform mobile application for both iOS and Android, prov
 image: "url/to/image"
 platform: "iOS, Android"
 type: "Mobile App"
-techStack: "React Native, Node.js"
+techStack:
+  - "React Native"
+  - "Node.js"
 status: "In Development"
 demo: "https://demo.mobileapp.com"
 category: "Mobile Applications"
-tags: "mobile, react-native, cross-platform"
+tags:
+  - "mobile"
+  - "react-native"
+  - "cross-platform"
 lang: "JavaScript"
 draft: false
 ---
