@@ -40,13 +40,32 @@ const products = await getCollection("products", ({ data }) => {
 					<div class="p-6">
 						<h3 class="text-lg font-bold mb-2">{product.data.title}</h3>
 						<p class="text-sm opacity-75 mb-4 line-clamp-2">{product.data.description}</p>
+						<div class="flex flex-wrap gap-2 mb-4">
+							{product.data.type && (
+								<span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
+									{product.data.type}
+								</span>
+							)}
+							{product.data.platform && (
+								<span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
+									{product.data.platform}
+								</span>
+							)}
+							{product.data.status && (
+								<span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-2 py-1 rounded">
+									{product.data.status}
+								</span>
+							)}
+						</div>
 						<div class="flex justify-between items-center">
-							<span class="text-xl font-bold text-blue-500">
-								${product.data.price}
-							</span>
 							{product.data.category && (
 								<span class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
 									{product.data.category}
+								</span>
+							)}
+							{product.data.demo && (
+								<span class="text-xs font-medium text-blue-500">
+									Demo available
 								</span>
 							)}
 						</div>

@@ -29,7 +29,6 @@ const productsCollection = defineCollection({
 		type: z.string(),
 		techStack: z.array(z.string()),
 		status: z.string().optional(),
-		github: z.string().optional(),
 		demo: z.string().optional(),
 		category: z.string().optional(),
 		tags: z.array(z.string()).optional().default([]),
