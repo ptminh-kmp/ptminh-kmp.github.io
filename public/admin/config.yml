@@ -40,9 +40,29 @@ collections:
     label: "Products"
     folder: "src/content/products"
     create: true
+    slug: "{{title}}"
+    extension: "md"
+    format: "frontmatter"
     fields:
-      - { label: 'Platform', name: 'platform', widget: 'string' }
-      - { label: 'Type', name: 'type', widget: 'select', options: ['Web', 'Mobile', 'Desktop'] }
-      - { label: 'Tech Stack', name: 'techStack', widget: 'string' }
-      - { label: 'Status', name: 'status', widget: 'select', options: ['Active', 'Inactive'] }
-      - { label: 'Demo URL', name: 'demoURL', widget: 'string' }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image URL", name: "image", widget: "string", required: false }
+      - { label: "Platform", name: "platform", widget: "string", required: false }
+      - { label: "Type", name: "type", widget: "select", options: ['Web', 'Mobile', 'Desktop', 'API', 'Library', 'Tool'], required: false }
+      - { label: "Tech Stack", name: "techStack", widget: "list", required: false, field: { label: "Tech", name: "tech", widget: "string" } }
+      - { label: "Status", name: "status", widget: "select", options: ['Active', 'Inactive', 'In Development', 'Maintenance'], required: false }
+      - { label: "Demo URL", name: "demo", widget: "string", required: false }
+      - { label: "Category", name: "category", widget: "string", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false, field: { label: "Tag", name: "tag", widget: "string" } }
+      - { 
+          label: "Language", 
+          name: "lang", 
+          widget: "select", 
+          options: [
+            { label: "Tiếng Việt", value: "vi" },
+            { label: "English", value: "en" }
+          ],
+          default: "vi"
+        }
+      - { label: "Draft", name: "draft", widget: "boolean", default: false }
+      - { label: "Content", name: "body", widget: "markdown" }

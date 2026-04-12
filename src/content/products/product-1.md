@@ -14,7 +14,7 @@ tags:
   - "mobile"
   - "react-native"
   - "cross-platform"
-lang: "JavaScript"
+lang: "en"
 draft: false
 ---
 
