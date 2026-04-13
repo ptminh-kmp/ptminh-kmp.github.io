@@ -8,7 +8,6 @@ import expressiveCode from "astro-expressive-code";
 import react from "@astrojs/react";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
-import node from "@astrojs/node";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeComponents from "rehype-components"; /* Render the custom directive content */
 import rehypeKatex from "rehype-katex";
@@ -30,7 +29,6 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 // https://astro.build/config
 export default defineConfig({
 	output: "static",
-	adapter: node({ mode: "standalone" }),
 	i18n: {
 		defaultLocale: "vi",
 		locales: ["vi", "en"],

@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "check": "astro check",
-    "build": "astro build && node -e \"const fs=require('fs');if(fs.existsSync('dist/client')){fs.renameSync('dist/client','dist_temp');fs.rmSync('dist',{recursive:true,force:true});fs.renameSync('dist_temp','dist');}\" && pagefind --site dist",
+    "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "type-check": "tsc --noEmit --isolatedDeclarations",

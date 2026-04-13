@@ -1,7 +1,7 @@
 ---
 title: Privacy Policy EN
 app: moneywise
-slug: privacy-policy
+customSlug: privacy-policy
 lang: en
 description: Privacy policy for MoneyWise app
 published: 2024-01-01

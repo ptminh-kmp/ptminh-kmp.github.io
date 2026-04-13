@@ -1,7 +1,7 @@
 ---
 title: "Privacy Policy"
 app: "moneywise"
-slug: "privacy-policy"
+customSlug: "privacy-policy"
 description: "Privacy policy for MoneyWise app"
 published: 2024-01-01
 lang: "vi"

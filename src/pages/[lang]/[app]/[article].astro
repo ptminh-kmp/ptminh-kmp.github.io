@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 			params: { 
 				lang: article.data.lang || "en", 
 				app: article.data.app, 
-				article: article.data.slug || article.id 
+				article: article.data.customSlug || article.id 
 			},
 			props: { article },
 		},
