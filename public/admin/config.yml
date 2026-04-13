@@ -77,6 +77,7 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "App Name", name: "app", widget: "string" }
+      - { label: "Custom URL Slug", name: "customSlug", widget: "string", required: false, hint: "Dùng để tạo link đẹp, ví dụ: privacy-policy" }
       - { 
           label: "Language", 
           name: "lang", 
