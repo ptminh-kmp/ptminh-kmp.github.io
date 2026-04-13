@@ -49,6 +49,7 @@ const appArticlesCollection = defineCollection({
 		tags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
 		lang: z.string().optional().default(""),
+		slug: z.string().optional(),
 	}),
 });
 

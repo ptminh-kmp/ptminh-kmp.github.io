@@ -8,7 +8,11 @@ export async function getStaticPaths() {
 
 	return appArticles.flatMap((article) => [
 		{
-			params: { lang: article.data.lang || "en", app: article.data.app, article: article.slug },
+			params: { 
+				lang: article.data.lang || "en", 
+				app: article.data.app, 
+				article: article.data.slug || article.id 
+			},
 			props: { article },
 		},
 	]);
