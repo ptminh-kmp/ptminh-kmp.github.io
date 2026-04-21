@@ -1,7 +1,7 @@
 ---
 lang: vi
-title: "The Ultimate Guide to iOS CI/CD with Fastlane & GitHub Actions"
-description: "A step-by-step tutorial on automating Flutter iOS builds using Fastlane Match, App Store Connect API, and GitHub Actions."
+title: "Hướng dẫn toàn tập về CI/CD cho iOS với Fastlane & GitHub Actions"
+description: "Hướng dẫn chi tiết từng bước cách tự động hóa quá trình build ứng dụng Flutter iOS sử dụng Fastlane Match, App Store Connect API và GitHub Actions."
 published: 2026-04-21
 category: CI/CD
 tags: ["iOS", "CI/CD", "Fastlane", "GitHub Actions", "Flutter"]
