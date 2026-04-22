@@ -1,0 +1,31 @@
+---
+interface Props {
+  slot?: string;
+  className?: string;
+  format?: "auto" | "fluid" | "rectangle" | "vertical" | "horizontal";
+  layout?: "in-article" | "display";
+  responsive?: boolean;
+}
+
+const {
+  slot = "adsense-slot",
+  className = "",
+  format = "auto",
+  layout = "in-article",
+  responsive = true,
+} = Astro.props;
+
+const adClient = "ca-pub-1433382321558923";
+---
+
+<!-- Google AdSense Ad Unit -->
+<ins class="adsbygoogle ${className}"
+     style="display:block"
+     data-ad-client="${adClient}"
+     data-ad-slot="${slot}"
+     data-ad-format="${format}"
+     data-ad-layout="${layout}"
+     data-full-width-responsive="${responsive.toString()}"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
