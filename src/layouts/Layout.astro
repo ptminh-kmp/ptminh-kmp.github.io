@@ -4,6 +4,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
+import AdSense from "@components/AdSense.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
@@ -166,6 +167,18 @@ const bannerOffset =
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
+
+		<!-- Mobile sticky AdSense ad - bottom of screen on mobile devices -->
+		<div class="adsense-mobile-sticky md:hidden">
+			<AdSense 
+				slot="mobile-sticky-ad" 
+				className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
+				format="anchor"
+				layout="display"
+				responsive={true}
+				label="Advertisement"
+			/>
+		</div>
 	</body>
 </html>
 

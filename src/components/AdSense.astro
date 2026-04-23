@@ -5,27 +5,73 @@ interface Props {
   format?: "auto" | "fluid" | "rectangle" | "vertical" | "horizontal";
   layout?: "in-article" | "display";
   responsive?: boolean;
+  label?: string;
 }
 
 const {
-  slot = "adsense-slot",
+  slot = "",
   className = "",
   format = "auto",
   layout = "in-article",
   responsive = true,
+  label = "",
 } = Astro.props;
 
 const adClient = "ca-pub-1433382321558923";
+
+// Generate a unique ID for this ad instance
+const adId = `adsense-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <!-- Google AdSense Ad Unit -->
-<ins class="adsbygoogle ${className}"
-     style="display:block"
-     data-ad-client="${adClient}"
-     data-ad-slot="${slot}"
-     data-ad-format="${format}"
-     data-ad-layout="${layout}"
-     data-full-width-responsive="${responsive.toString()}"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
+<div id="${adId}" class="adsense-container ${className}">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="${adClient}"
+         data-ad-slot="${slot}"
+         data-ad-format="${format}"
+         data-ad-layout="${layout}"
+         data-full-width-responsive="${responsive.toString()}">
+    </ins>
+</div>
+
+<script is:inline>
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+            console.error('AdSense error:', e);
+        }
+    });
+} else {
+    try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+        console.error('AdSense error:', e);
+    }
+}
+
+// Handle ad blocker detection
+setTimeout(() => {
+    const adElement = document.getElementById('${adId}');
+    if (adElement) {
+        const insElement = adElement.querySelector('ins.adsbygoogle');
+        if (insElement && insElement.offsetHeight === 0 && insElement.offsetWidth === 0) {
+            // Ad might be blocked, show fallback message
+            const fallback = document.createElement('div');
+            fallback.className = 'ad-fallback text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg';
+            fallback.innerHTML = `
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    ${label || 'Advertisement'}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    Consider supporting by disabling ad blocker
+                </p>
+            `;
+            adElement.appendChild(fallback);
+        }
+    }
+}, 1000);
 </script>

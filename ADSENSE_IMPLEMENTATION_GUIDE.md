@@ -3,121 +3,95 @@
 ## Current Status
 ✅ Adsense script is already included in `src/layouts/Layout.astro`
 ✅ Google Analytics is configured
-❌ Ad units are not placed within content
-❌ No responsive ad placements
+✅ AdSense component created (`src/components/AdSense.astro`)
+✅ Post layout updated with in-article and below-content ads
+✅ Sidebar ads added for desktop
+✅ Mobile sticky ads added
+✅ All ads are responsive and include fallback for ad blockers
 
-## Recommended Ad Placements
+## Implementation Complete!
 
-### 1. In-Article Ads (Highest CTR)
-**Location:** Between H2 sections in long-form content
-**Implementation:** Modify `src/pages/[lang]/posts/[...slug].astro`
+All AdSense placements have been implemented in the feature branch. Here's what's been added:
 
-```astro
-// Add this import at the top
-import AdSense from "@components/AdSense.astro";
+## Ad Placements Implemented
 
-// Then in the template, after the Markdown component, add:
-<AdSense 
-  slot="your-ad-slot-id-here" 
-  className="my-8"
-  format="fluid"
-  layout="in-article"
-  responsive={true}
-/>
-```
+### 1. ✅ In-Article Ads (Highest CTR)
+**Location:** After post content, before license section
+**File:** `src/pages/[lang]/posts/[...slug].astro`
+**Slot:** `in-article-ad`
+**Format:** Fluid, responsive
 
-### 2. Sidebar Ads (Desktop)
-**Location:** Right sidebar in `src/layouts/MainGridLayout.astro`
-**Implementation:** Add to sidebar component
+### 2. ✅ Below Content Ads
+**Location:** After license section, before next/prev navigation
+**File:** `src/pages/[lang]/posts/[...slug].astro`
+**Slot:** `below-content-ad`
+**Format:** Horizontal display
 
-### 3. Below Content Ads
-**Location:** After post content, before next/prev navigation
-**Implementation:** Add to `src/pages/[lang]/posts/[...slug].astro`
+### 3. ✅ Sidebar Ads (Desktop)
+**Location:** Right sidebar, above categories
+**File:** `src/components/widget/SideBar.astro`
+**Slot:** `sidebar-ad`
+**Format:** Rectangle (300×250)
 
-### 4. Sticky Footer Ads (Mobile)
-**Location:** Fixed at bottom on mobile
-**Implementation:** Add to `src/layouts/Layout.astro`
+### 4. ✅ Sticky Footer Ads (Mobile)
+**Location:** Fixed at bottom on mobile devices
+**File:** `src/layouts/Layout.astro`
+**Slot:** `mobile-sticky-ad`
+**Format:** Anchor ad
 
-## Step-by-Step Implementation
+### 5. ✅ Enhanced AdSense Component
+**File:** `src/components/AdSense.astro`
+**Features:**
+- Ad blocker detection with fallback message
+- Unique ID generation for each ad instance
+- Error handling for AdSense script
+- Responsive design support
+- Customizable labels
+
+## Implementation Complete!
+
+All AdSense placements have been implemented. Here's what you need to do next:
 
 ### Step 1: Create Ad Units in Adsense Dashboard
 1. Go to https://adsense.google.com
 2. Navigate to **Ads → Ad units**
-3. Create these ad units:
-   - **In-article**: Responsive, auto-format
-   - **Sidebar**: 300×250 display
-   - **Below content**: 728×90 leaderboard
-   - **Mobile sticky**: 320×50 anchor ad
+3. Create these ad units (match the slot names):
+   - **In-article ad** (`in-article-ad`): Responsive, auto-format
+   - **Below content ad** (`below-content-ad`): 728×90 leaderboard
+   - **Sidebar ad** (`sidebar-ad`): 300×250 display
+   - **Mobile sticky ad** (`mobile-sticky-ad`): 320×50 anchor ad
 
-### Step 2: Update Post Layout
-Modify `src/pages/[lang]/posts/[...slug].astro`:
+### Step 2: Update Slot IDs
+After creating ad units in Adsense, update the slot IDs in these files:
 
-```astro
----
-// Add import
-import AdSense from "@components/AdSense.astro";
-// ... existing imports ...
----
+1. **Post layout** (`src/pages/[lang]/posts/[...slug].astro`):
+   - Line with `slot="in-article-ad"` → Replace with your actual slot ID
+   - Line with `slot="below-content-ad"` → Replace with your actual slot ID
 
-// In the template, find the Markdown section and add ads:
+2. **Sidebar** (`src/components/widget/SideBar.astro`):
+   - Line with `slot="sidebar-ad"` → Replace with your actual slot ID
 
-<Markdown class="mb-6 markdown-content onload-animation">
-    <Content />
-</Markdown>
+3. **Layout** (`src/layouts/Layout.astro`):
+   - Line with `slot="mobile-sticky-ad"` → Replace with your actual slot ID
 
-<!-- Add in-article ad after content -->
-<AdSense 
-  slot="your-in-article-slot-id" 
-  className="my-8 rounded-lg"
-  format="fluid"
-  layout="in-article"
-  responsive={true}
-/>
+### Step 3: Test Implementation
+```bash
+# Test locally
+pnpm dev
+# Visit: http://localhost:4321/en/posts/openclaw-personal-ai-assistant-github-trending-2026/
 
-{licenseConfig.enable && <License ... />}
-
-<!-- Add below-content ad -->
-<AdSense 
-  slot="your-below-content-slot-id" 
-  className="my-8"
-  format="horizontal"
-  layout="display"
-  responsive={true}
-/>
+# Check:
+1. Ads display correctly
+2. No console errors
+3. Responsive design works
+4. Mobile sticky ad only shows on mobile
 ```
 
-### Step 3: Add Sidebar Ads
-Modify `src/components/widget/SideBar.astro` (if it exists) or create it:
-
-```astro
----
-import AdSense from "./AdSense.astro";
----
-
-<aside class="sidebar-ads">
-  <AdSense 
-    slot="your-sidebar-slot-id"
-    className="sticky top-20"
-    format="rectangle"
-    responsive={true}
-  />
-</aside>
-```
-
-### Step 4: Add Mobile Sticky Ads
-Modify `src/layouts/Layout.astro`:
-
-```astro
-<!-- Add before closing body tag -->
-<div class="adsense-sticky-mobile">
-  <AdSense 
-    slot="your-mobile-sticky-slot-id"
-    className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-    format="anchor"
-    responsive={true}
-  />
-</div>
-```
+### Step 4: Deploy and Monitor
+1. Merge the PR and deploy to production
+2. Monitor Adsense dashboard for impressions
+3. Check Google Analytics for page performance
+4. Adjust ad placements if needed based on CTR data
 
 ## Best Practices for Higher RPM
 
