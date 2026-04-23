@@ -36,21 +36,50 @@ const adId = `adsense-${Math.random().toString(36).substr(2, 9)}`;
 </div>
 
 <script is:inline>
-// Wait for DOM to be ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        try {
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {
-            console.error('AdSense error:', e);
-        }
-    });
-} else {
+// Store ad initialization state to prevent duplicate loads
+window._adsenseInitialized = window._adsenseInitialized || new Set();
+
+function initializeAdSense() {
+    const adElement = document.getElementById('${adId}');
+    if (!adElement) return;
+    
+    // Check if this specific ad has already been initialized
+    if (window._adsenseInitialized.has('${adId}')) {
+        return;
+    }
+    
+    const insElement = adElement.querySelector('ins.adsbygoogle');
+    if (!insElement) return;
+    
+    // Check if ad already has content (already loaded)
+    if (insElement.innerHTML.trim() !== '') {
+        window._adsenseInitialized.add('${adId}');
+        return;
+    }
+    
     try {
         (adsbygoogle = window.adsbygoogle || []).push({});
+        window._adsenseInitialized.add('${adId}');
     } catch (e) {
         console.error('AdSense error:', e);
     }
+}
+
+// Initial load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAdSense);
+} else {
+    initializeAdSense();
+}
+
+// Handle Swup page transitions
+if (typeof window.swup !== 'undefined') {
+    window.swup.on('contentReplaced', () => {
+        // Reset initialization for new page
+        window._adsenseInitialized.clear();
+        // Re-initialize ads after a short delay
+        setTimeout(initializeAdSense, 100);
+    });
 }
 
 // Handle ad blocker detection
