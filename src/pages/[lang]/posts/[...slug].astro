@@ -13,6 +13,7 @@ import ImageWrapper from "../../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../../config";
 import { formatDateToYYYYMMDD } from "../../../utils/date-utils";
+import AdSense from "@components/AdSense.astro";
 
 export async function getStaticPaths() {
 	const blogEntriesEn = await getSortedPosts("en");
@@ -111,7 +112,31 @@ const jsonLd = {
                 <Content />
             </Markdown>
 
+            {/* In-article AdSense ad - placed after content for better CTR */}
+            <div class="my-8 text-center">
+                <AdSense 
+                    slot="in-article-ad" 
+                    className="rounded-lg mx-auto"
+                    format="fluid"
+                    layout="in-article"
+                    responsive={true}
+                />
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Advertisement</p>
+            </div>
+
             {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
+
+            {/* Below-content AdSense ad - for additional monetization */}
+            <div class="my-8 text-center">
+                <AdSense 
+                    slot="below-content-ad" 
+                    className="rounded-lg mx-auto"
+                    format="horizontal"
+                    layout="display"
+                    responsive={true}
+                />
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Advertisement</p>
+            </div>
 
         </div>
     </div>
