@@ -71,6 +71,7 @@ const bannerOffsetByPosition = {
 };
 const bannerOffset =
 	bannerOffsetByPosition[siteConfig.banner.position || "center"];
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!DOCTYPE html>
@@ -102,6 +103,8 @@ const bannerOffset =
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href={canonicalURL} />
+
 		{favicons.map(favicon => (
 			<link rel="icon"
 				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}
@@ -158,6 +161,9 @@ const bannerOffset =
 
 		gtag('config', 'G-FJZL6TB7JM');
 		</script>
+		<link rel="alternate" hreflang="vi" href="https://minixium.com/vi" />
+<link rel="alternate" hreflang="en" href="https://minixium.com/en" />
+<link rel="alternate" hreflang="x-default" href="https://minixium.com/" />
 	</head>
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize

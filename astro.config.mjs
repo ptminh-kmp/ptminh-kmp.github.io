@@ -39,7 +39,22 @@ export default defineConfig({
 	},
 	site: "https://minixium.com",
 	base: "/",
-	trailingSlash: "ignore",
+	redirects: {
+		"/4/" : "/vi/",	
+		"/posts/open-source-crm-webvella-webvella-erp/" : "/vi/",
+		"/posts/self-host-karakeep-app-karakeep/" : "/vi/",
+		"/2/" : "/vi/",
+		"/archive/?tag=chatgpt-alternative" : "/vi/",
+		"/vi/8/" : "/vi/",
+		"/posts/self-host-tabbyml-tabby/" : "/vi/",
+		"/posts/add-google-analystic-to-your-jekyll-website-with-chirpy-theme/" : "/vi/",
+		"/page2/" : "/vi/",
+		"/tags/outline/" : "/vi/",
+		"/tags/saas-tools/" : "/vi/",
+		"/vi/tags/add-google-adsense-jekyll/" : "/vi/",
+		"/tags/blog/" : "/vi/",
+	},
+	trailingSlash: "always",
 	integrations: [
 		tailwind({
 			nesting: true,
