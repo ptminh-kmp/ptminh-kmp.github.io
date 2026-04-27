@@ -96,7 +96,7 @@ Match sẽ yêu cầu nhập **Match password** — đây là passphrase để m
 
 Tạo hoặc cập nhật các file sau trong thư mục dự án của bạn.
 
-### `ios/Matchfile`
+### `ios/fastlane/Matchfile`
 
 ```ruby
 git_url(ENV["MATCH_GIT_URL"])
