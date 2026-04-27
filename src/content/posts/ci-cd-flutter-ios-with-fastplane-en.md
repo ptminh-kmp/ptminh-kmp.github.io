@@ -100,7 +100,7 @@ Add these secrets to your project repository:
 
 Update or create the following files in your project.
 
-### `ios/Matchfile`
+### `ios/fastlane/Matchfile`
 
 ```ruby
 git_url(ENV["MATCH_GIT_URL"])
