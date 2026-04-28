@@ -34,7 +34,7 @@ export default defineConfig({
 		locales: ["vi", "en"],
 		routing: {
 			prefixDefaultLocale: true,
-			redirectToDefaultLocale: true,
+			redirectToDefaultLocale: false,
 		}
 	},
 	site: "https://minixium.com",

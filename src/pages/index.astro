@@ -1,13 +1,54 @@
 ---
 export const prerender = true;
+
+import type { CollectionEntry } from "astro:content";
+import PostCard from "../components/PostCard.astro";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { PAGE_SIZE } from "../constants/constants";
+import { getSortedPosts } from "../utils/content-utils";
+import { getPostUrlBySlug } from "../utils/url-utils";
+import { siteConfig } from "../config";
+
+const posts = await getSortedPosts("vi");
+const firstPagePosts = posts.slice(0, PAGE_SIZE);
+const hasMorePages = posts.length > PAGE_SIZE;
+
+let delay = 0;
+const interval = 50;
 ---
-<!DOCTYPE html>
-<html lang="vi">
-  <head>
-    <meta http-equiv="refresh" content="0;url=/vi/" />
-    <title>Redirecting...</title>
-  </head>
-  <body>
-    If you are not redirected automatically, follow this <a href="/vi/">link to the website</a>.
-  </body>
-</html>
+
+<MainGridLayout
+    lang="vi"
+    canonicalUrl="/vi/"
+    description={siteConfig.subtitle}
+>
+    <div class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 md:py-0 md:bg-transparent md:gap-4 mb-4">
+        {firstPagePosts.map((entry: CollectionEntry<"posts">) => (
+            <PostCard
+                entry={entry}
+                title={entry.data.title}
+                tags={entry.data.tags}
+                category={entry.data.category}
+                published={entry.data.published}
+                updated={entry.data.updated}
+                url={getPostUrlBySlug(entry.slug, "vi")}
+                image={entry.data.image}
+                description={entry.data.description}
+                draft={entry.data.draft}
+                class:list="onload-animation"
+                style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+            />
+        ))}
+    </div>
+    {hasMorePages && (
+        <div class="flex justify-center mt-4 onload-animation">
+            <a
+                href="/vi/2/"
+                class="btn-card px-6 py-2 rounded-lg text-[var(--primary)] font-bold"
+                aria-label="View more posts"
+            >
+                Xem thêm bài viết →
+            </a>
+        </div>
+    )}
+</MainGridLayout>
