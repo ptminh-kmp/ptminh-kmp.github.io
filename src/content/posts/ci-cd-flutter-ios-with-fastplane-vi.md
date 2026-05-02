@@ -4,7 +4,7 @@ lang: vi
 description: Hướng dẫn chi tiết từng bước cách tự động hóa quá trình build ứng dụng Flutter iOS sử dụng Fastlane Match, App Store Connect API và GitHub Actions.
 author: minhpt
 published: 2026-04-21
-updated: ''
+updated: 2026-05-02T12:49:00
 category: CI/CD
 tags:
   - iOS
