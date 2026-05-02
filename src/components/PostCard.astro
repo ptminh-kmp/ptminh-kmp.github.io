@@ -42,8 +42,8 @@ const coverWidth = "28%";
 
 const { remarkPluginFrontmatter } = await entry.render();
 ---
-<div class:list={["card-base flex flex-col-reverse md:flex-col w-full rounded-[var(--radius-large)] overflow-hidden relative", className]} style={style}>
-    <div class:list={["pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative", {"w-full md:w-[calc(100%_-_52px_-_12px)]": !hasCover, "w-full md:w-[calc(100%_-_var(--coverWidth)_-_12px)]": hasCover}]}>
+<div class:list={["card-base flex flex-col-reverse w-full rounded-[var(--radius-large)] overflow-hidden relative", hasCover ? "md:flex-row" : "md:flex-col", className]} style={style}>
+    <div class:list={["pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative", {"w-full md:w-[calc(100%_-_52px_-_12px)]": !hasCover, "flex-1 min-w-0": hasCover}]}>
         <a href={url}
            class="transition group w-full block font-bold mb-3 text-3xl text-90
         hover:text-[var(--primary)] dark:hover:text-[var(--primary)]
@@ -80,7 +80,7 @@ const { remarkPluginFrontmatter } = await entry.render();
     {hasCover && <a href={url} aria-label={title}
                     class:list={["group",
                         "max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0",
-                        "md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden active:scale-95"
+                        "md:w-[var(--coverWidth)] md:flex-shrink-0 md:self-stretch relative rounded-xl overflow-hidden active:scale-95"
                     ]} >
         <div class="absolute pointer-events-none z-10 w-full h-full group-hover:bg-black/30 group-active:bg-black/50 transition"></div>
         <div class="absolute pointer-events-none z-20 w-full h-full flex items-center justify-center ">
@@ -89,7 +89,7 @@ const { remarkPluginFrontmatter } = await entry.render();
             </Icon>
         </div>
         <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post"
-                  class="w-full h-full">
+                  class="w-full h-full" fit="contain">
         </ImageWrapper>
     </a>}
 

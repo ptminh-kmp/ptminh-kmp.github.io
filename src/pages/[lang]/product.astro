@@ -29,11 +29,11 @@ const products = await getCollection("products", ({ data }) => {
 					class="card-base rounded-[var(--radius-large)] overflow-hidden hover:shadow-lg transition-shadow"
 				>
 					{product.data.image && (
-						<div class="w-full h-48 overflow-hidden">
-							<img 
-								src={product.data.image} 
+						<div class="w-full overflow-hidden">
+							<img
+								src={product.data.image}
 								alt={product.data.title}
-								class="w-full h-full object-cover hover:scale-105 transition-transform"
+								class="w-full h-auto hover:scale-105 transition-transform"
 							/>
 						</div>
 					)}
