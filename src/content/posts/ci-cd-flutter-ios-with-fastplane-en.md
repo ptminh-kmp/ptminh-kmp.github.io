@@ -4,7 +4,7 @@ lang: en
 description: A step-by-step tutorial on automating Flutter iOS builds using Fastlane Match, App Store Connect API, and GitHub Actions.
 author: minhpt
 published: 2026-04-21
-updated: ''
+updated: 2026-05-02T12:50:00
 category: CI/CD
 tags:
   - iOS
