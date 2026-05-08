@@ -1,6 +1,7 @@
 ---
 title: "Kiro: Môi trường phát triển Agentic của AWS — Hồi kết của Vibe Coding?"
 description: "Tìm hiểu sâu về Kiro (kiro.dev) — agentic IDE và autonomous coding agent của Amazon. Cách hoạt động, giá cả, và tại sao nó có thể là công cụ AI coding kỷ luật nhất hiện nay."
+published: 2026-05-08
 pubDate: 2026-05-08T10:00:00.000Z
 slug: kiro-agentic-development-environment-aws-2026
 tags:
