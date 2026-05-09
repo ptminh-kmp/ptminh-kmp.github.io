@@ -46,7 +46,7 @@
     "markdown-it": "^14.1.1",
     "mdast-util-to-string": "^4.0.0",
     "overlayscrollbars": "^2.15.1",
-    "pagefind": "^1.3.0",
+    "pagefind": "^1.5.2",
     "photoswipe": "^5.4.4",
     "playwright": "^1.55.0",
     "reading-time": "^1.5.0",
