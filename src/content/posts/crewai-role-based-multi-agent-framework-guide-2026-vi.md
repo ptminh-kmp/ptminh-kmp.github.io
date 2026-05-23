@@ -15,11 +15,6 @@ tags:
 category: ai-agents
 lang: vi
 series:
-  - "AI Agent Frameworks 2026 — Production Comparison"
-order: 2
-total: 6
-lang: vi
-series:
   name: "AI Agent Frameworks 2026 — So sánh Production"
   order: 2
   total: 6
