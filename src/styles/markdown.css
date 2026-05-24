@@ -81,7 +81,6 @@
             background: oklch(0.40 0.03 var(--hue));
         }
     }
-    }
     .frame:hover .copy-btn {
         opacity: 1;
     }
