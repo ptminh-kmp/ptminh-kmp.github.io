@@ -607,7 +607,172 @@ main().catch((error) => {
 
 ---
 
-## Step 3: Build & Test
+---
+
+## Step 3: Resources — Deep Dive with Examples
+
+The full code above includes 3 resources. Let's examine each one in detail.
+
+### Resource 1 — `issue-detail`: Read a Single Issue
+
+**URI template:** `issue://{owner}/{repo}/{number}`
+
+This resource returns a GitHub issue as **formatted markdown**. The LLM can read it like a document — it sees the title, status, labels, and body all in one readable format.
+
+**How the code works:**
+1. The template extracts `{owner}`, `{repo}`, `{number}` from the URI
+2. We call `github.getIssue()` to fetch the issue from GitHub
+3. We assemble a markdown string with all the key fields
+4. We return it with `mimeType: "text/markdown"` — this tells the LLM it's readable text
+
+**What the LLM receives:**
+```markdown
+# My Issue Title
+**Status:** 🟢 Open
+**Author:** @user1 | **Labels:** `bug` `priority`
+**URL:** https://github.com/owner/repo/issues/42
+---
+Steps to reproduce: 1. Click button X 2. See error Y
+```
+
+**Why this matters:** Without resources, the LLM would need to call `get_issue` tool every time it needs issue context. With resources, the host can fetch the content *before* the LLM even starts generating — it's part of the context from the start.
+
+### Resource 2 — `issue-comments`: Read the Discussion Thread
+
+**URI template:** `issue://{owner}/{repo}/{number}/comments`
+
+This resource returns all comments on an issue as a threaded conversation. Each comment is formatted with the author and date.
+
+**How the code works:**
+1. We fetch comments directly from the GitHub REST API (`/repos/{owner}/{repo}/issues/{number}/comments`)
+2. If no comments exist, return a friendly "no comments" message
+3. Otherwise, map each comment to a markdown section with `---` separator
+
+**What the LLM receives:**
+```markdown
+# Comments for #42
+
+---
+**@alice** commented on 6/1/2026
+
+I can reproduce this on macOS too.
+
+---
+**@bob** commented on 6/2/2026
+
+Fixed in PR #100. Closing.
+```
+
+**Why this matters:** The LLM can read the full conversation history to understand context before making decisions.
+
+### Resource 3 — `open-issues`: Overview of All Open Issues
+
+**URI template:** `issue://{owner}/{repo}/open`
+
+This resource provides a quick summary of all open issues — great for answering "what's outstanding?" at a glance.
+
+**How the code works:**
+1. We call `github.listIssues()` with state `"open"`
+2. We format as a markdown list with issue numbers and titles, hyperlinked to their URLs
+3. Empty state: "✨ No open issues!"
+
+**What the LLM receives:**
+```markdown
+# Open Issues (3)
+
+- [#42](https://...): Login button broken on mobile
+- [#43](https://...): Add dark mode toggle
+- [#44](https://...): API rate limit documentation
+```
+
+**Why this matters:** This is a "directory" resource — it helps the LLM decide *which* resource to read next. The LLM sees the list, picks an interesting issue, and reads its detail via `issue://owner/repo/42`.
+
+### Resources vs Tools: Why Both?
+
+| Situation | Uses | Reason |
+|-----------|------|--------|
+| "What's the status of issue #42?" | Resource `issue://.../42` | Read-only, get formatted content |
+| "Close issue #42" | Tool `update_issue` with `state: "closed"` | Side-effect, changes state |
+| "What open issues exist?" | Resource `issue://.../open` | Read-only, LLM browses the list |
+| "Set labels on issue #42" | Tool `update_issue` with `labels: ["bug"]` | Side-effect, changes state |
+
+**Think of resources as files (read-only, structured content) and tools as commands (can modify state).** The MCP protocol intentionally separates them so the host can cache resources efficiently and require explicit confirmation for state-changing tool calls.
+
+---
+
+## Step 4: Prompts — Deep Dive with Examples
+
+Prompts are **reusable templates** that users invoke. When a user selects a prompt, the server renders a structured user message that guides the LLM through a specific workflow.
+
+### Prompt 1 — `triage-issue`: Guided Issue Analysis
+
+**Parameters:** `owner`, `repo`, `issue_number`
+
+This prompt generates a structured triage request. When invoked, the user fills in the issue details, and the LLM receives a clear instruction to:
+
+1. **Assess severity** — Bug, feature request, or question?
+2. **Suggest labels** — What GitHub labels fit?
+3. **Set priority** — Immediate, this sprint, or backlog?
+4. **Recommend assignee** — Who should handle this?
+5. **Propose next steps** — What info is missing from the reporter?
+
+**What happens step by step:**
+```
+1. User opens prompt menu in Claude Desktop
+2. User selects "triage-issue"
+3. Form appears with fields: owner=ptminh-kmp, repo=myrepo, issue_number=42
+4. User fills and submits
+5. Server renders:
+   "Please triage issue #42 in ptminh-kmp/myrepo.
+    Use get_issue tool. Analyze:
+    1. Severity..."
+6. LLM receives this as first message
+7. LLM calls get_issue to fetch details
+8. LLM returns structured triage analysis
+```
+
+### Prompt 2 — `weekly-summary`: One-Click Reporting
+
+**Parameters:** `owner`, `repo`
+
+Without this prompt, asking Claude "give me a weekly summary" might produce inconsistent results — one time it groups by label, next time by date. The prompt **standardizes** the output format every time.
+
+**Rendered output:**
+```
+Weekly summary for ptminh-kmp/myrepo.
+1. List open issues
+2. Group: 🔥 New | 📝 Updated | 🧊 Stale (30d+)
+3. Include number, title, labels, last update
+4. Count summary at top
+```
+
+The result is always the same structure — reliable, predictable.
+
+### Prompt 3 — `bug-report-template`: Structured Data Entry
+
+**Parameters:** (none — self-contained)
+
+This prompt returns a markdown template that the LLM uses to *create* a new issue. The LLM will fill in the fields by asking the user for details.
+
+**Rendered output:**
+```
+Use this template to file a bug report:
+## Bug Report
+### Describe the Bug
+### To Reproduce
+### Expected Behavior
+### Environment
+```
+
+The LLM then asks the user "What's the bug?" and fills in each section before calling `create_issue`.
+
+### Why Prompts Matter
+
+Prompts solve a real problem: **LLMs produce inconsistent output when given vague instructions.** A prompt locks down the workflow so the user always gets the same quality of result.
+
+---
+
+## Step 5: Build & Test
 
 ```bash
 npm run build
@@ -615,7 +780,7 @@ export GITHUB_TOKEN="ghp_your_token_here"
 npx @modelcontextprotocol/inspector node build/index.js
 ```
 
-Open Inspector. Three tabs:
+Open Inspector in your browser. Three tabs:
 
 **🛠 Tools Tab** — All 7 tools listed. Test each with params.
 
@@ -627,6 +792,8 @@ Open Inspector. Three tabs:
 **💬 Prompts Tab** — Select, fill params, see rendered template.
 
 ### Test in Claude Desktop
+
+Update `claude_desktop_config.json`:
 
 ```json
 {
@@ -640,40 +807,52 @@ Open Inspector. Three tabs:
 }
 ```
 
-Try: *"What are the open issues?"* → uses `open-issues` resource.
+Try these conversations:
 
-Try: Type `/` → select `weekly-summary` → structured report.
+```
+You: "What are the open issues in ptminh-kmp/ptminh-kmp.github.io?"
+→ LLM reads the open-issues resource → lists them all
+
+You: /tri... [type "/" to see prompts]
+→ Select triage-issue, fill repo details
+→ LLM fetches the issue, analyzes severity, suggests labels
+
+You: "Add label 'bug' to issues 1, 2, 3 in my repo"
+→ LLM calls batch_label_issues → labels 3 issues in one request
+```
 
 ---
 
-## Deep Dive: How Resources & Prompts Work
+## Debugging Tips
 
-### Resources Flow
+### Resources not showing?
+```bash
+# Build and check for compilation errors
+npm run build
 
-```
-LLM: "Tell me about issue #42"
-  → Host calls resources/read("issue://myuser/myrepo/42")
-  → Server returns markdown
-  → LLM reads it as context
-```
-
-Key: Resources are **read-only data** the LLM browses like a filesystem. Tools are **actions** the LLM takes.
-
-### Prompts Flow
-
-```
-User opens prompt menu → selects "triage-issue"
-  → Form appears (owner, repo, issue_number)
-  → User fills values → Server renders template
-  → LLM receives rendered text as first message
-  → LLM calls get_issue, analyzes, returns structured triage
+# If resources don't appear in Inspector, verify:
+# 1. ResourceTemplate is imported from @modelcontextprotocol/sdk/server/mcp.js
+# 2. URI template syntax is correct: issue://{param1}/{param2}
+# 3. The handler returns an object with { contents: [{ uri, mimeType, text }] }
 ```
 
-Key: Prompts are **scaffolding** that ensures correct workflow.
+### Prompts not showing?
+```bash
+# Prompts require Claude Desktop v1.3+ or Inspector v0.5+
+# Verify in Inspector: the Prompts tab should show 3 items
+# If empty, check the prompt definition syntax matches the SDK version
+```
+
+### Tools returning errors?
+```bash
+# Check GITHUB_TOKEN is set and has correct scopes
+# GitHub requires: issues:read and issues:write
+# For public repos, issues:read is sufficient
+```
 
 ---
 
-## Server Capabilities After Day 2
+## The Complete Picture
 
 ```
 📁 github-issue-manager v1.0.1
@@ -685,16 +864,34 @@ Key: Prompts are **scaffolding** that ensures correct workflow.
 | Capability | Count | Purpose |
 |-----------|-------|---------|
 | Tools | 7 | Actions — read/write GitHub issues |
-| Resources | 3 | Read-only data as markdown |
-| Prompts | 3 | Scaffolded workflows |
+| Resources | 3 | Read-only data as markdown content |
+| Prompts | 3 | Scaffolded workflow templates |
+
+Your server is now a **full MCP citizen** — it supports all three capabilities defined in the MCP spec.
 
 ---
 
 ## Prepare for Day 3
 
-Right now: stdio transport, localhost only.
+Current limitation: stdio transport means the server only works on localhost via child process.
 
-**Day 3:** **SSE transport** + Docker. Your server accessible from any machine.
+**Day 3 preview:** We'll replace stdio with **SSE (Server-Sent Events)** transport. Your server becomes a standalone HTTP server. Deploy it with Docker. Connect from any machine.
+
+```
+Day 2: Child process (localhost only)
+  ┌──────────────────────────────────┐
+  │ Claude Desktop → MCP Server      │
+  │ (spawns as child process)        │
+  │ (stdio transport)                │
+  └──────────────────────────────────┘
+
+Day 3: HTTP server (network accessible)
+  ┌──────────────────────────────────┐
+  │ Claude Desktop → Express.js      │
+  │ (connects via HTTP/SSE)          │
+  │ → Docker container → Production  │
+  └──────────────────────────────────┘
+```
 
 ---
 
@@ -708,4 +905,4 @@ Right now: stdio transport, localhost only.
 
 ---
 
-*Series: Building an MCP Server from Scratch. Day 2: Resources, prompts, and advanced tools with pagination and batch operations.*
+*Series: Building an MCP Server from Scratch. Day 2: Resources (read-only issue content), Prompts (triage, summary, bug report), and Advanced Tools (paginated listing, batch labeling). Full TypeScript source code included.*

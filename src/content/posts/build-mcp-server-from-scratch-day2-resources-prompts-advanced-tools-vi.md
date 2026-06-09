@@ -1,6 +1,6 @@
 ---
 title: "Build MCP Server từ Scratch — Day 2: Resources, Prompts & Advanced Tools"
-description: "Thêm Resources và Prompts vào MCP server. Code đầy đủ: expose issue comments như readable content, reusable prompt templates, pagination, batch labeling, test với Inspector."
+description: "Thêm Resources và Prompts vào MCP server. Full code + giải thích chi tiết từng resource, từng prompt, và 2 advanced tools mới (pagination, batch labeling)."
 published: 2026-06-08
 pubDate: 2026-06-08T23:40:00.000Z
 slug: build-mcp-server-from-scratch-day2-resources-prompts-advanced-tools-vi
@@ -28,6 +28,8 @@ tools/list                 tools/list + resources/list + prompts/list
 tools/call                 tools/call + resources/read + prompts/get
 ```
 
+Cuối bài, server là **full MCP citizen** — support cả 3 capabilities.
+
 ---
 
 ## Recap
@@ -41,11 +43,11 @@ github-issue-mcp/
 └── tsconfig.json
 ```
 
-Hôm nay thay thế toàn bộ `src/index.ts` — 7 tools, 3 resources, 3 prompts.
+Hôm nay thay thế `src/index.ts` — 7 tools, 3 resources, 3 prompts.
 
 ---
 
-## Code Đầy Đủ: src/index.ts
+## Full Code: src/index.ts
 
 ```typescript
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -84,9 +86,10 @@ async function githubFetch(url: string) {
 }
 
 // ════════════════════════════════════════
-// TOOLS (7)
+// TOOLS (7 tools)
 // ════════════════════════════════════════
 
+// Tool 1 — List issues
 server.tool("list_issues", "List issues", {
   owner: z.string(), repo: z.string(),
   state: z.enum(["open","closed","all"]).default("open"),
@@ -99,11 +102,10 @@ server.tool("list_issues", "List issues", {
       `#${i.number}: ${i.title}\n  ${i.state} | Created: ${i.created_at.slice(0,10)} | 💬 ${i.comments}\n  ${i.html_url}`
     ).join("\n\n");
     return { content: [{ type: "text", text: `## Issues in ${owner}/${repo} (${state})\n\n${formatted}` }] };
-  } catch (e) {
-    return { content: [{ type: "text", text: `Error: ${e}` }], isError: true };
-  }
+  } catch (e) { return { content: [{ type: "text", text: `Error: ${e}` }], isError: true }; }
 });
 
+// Tool 2 — Get single issue
 server.tool("get_issue", "Get issue details", {
   owner: z.string(), repo: z.string(),
   issue_number: z.number().int().positive(),
@@ -114,11 +116,10 @@ server.tool("get_issue", "Get issue details", {
       `# ${issue.title}\n**#${issue.number}** | **State:** ${issue.state}` +
       `\n**Author:** @${issue.user.login} | **Created:** ${issue.created_at}` +
       `\n**URL:** ${issue.html_url}\n---\n${issue.body || "*No description*"}` }] };
-  } catch (e) {
-    return { content: [{ type: "text", text: `Error: ${e}` }], isError: true };
-  }
+  } catch (e) { return { content: [{ type: "text", text: `Error: ${e}` }], isError: true }; }
 });
 
+// Tool 3 — Create issue
 server.tool("create_issue", "Create issue", {
   owner: z.string(), repo: z.string(),
   title: z.string().min(1).max(256),
@@ -129,11 +130,10 @@ server.tool("create_issue", "Create issue", {
   try {
     const issue = await github.createIssue(owner, repo, { title, body, labels, assignees });
     return { content: [{ type: "text", text: `✅ Created #${issue.number}: ${issue.title}\n${issue.html_url}` }] };
-  } catch (e) {
-    return { content: [{ type: "text", text: `Error: ${e}` }], isError: true };
-  }
+  } catch (e) { return { content: [{ type: "text", text: `Error: ${e}` }], isError: true }; }
 });
 
+// Tool 4 — Update issue
 server.tool("update_issue", "Update issue", {
   owner: z.string(), repo: z.string(), issue_number: z.number().int().positive(),
   title: z.string().max(256).optional(), body: z.string().optional(),
@@ -143,11 +143,10 @@ server.tool("update_issue", "Update issue", {
   try {
     const issue = await github.updateIssue(owner, repo, issue_number, changes);
     return { content: [{ type: "text", text: `✅ Updated #${issue_number}\nState: ${issue.state}\n${issue.html_url}` }] };
-  } catch (e) {
-    return { content: [{ type: "text", text: `Error: ${e}` }], isError: true };
-  }
+  } catch (e) { return { content: [{ type: "text", text: `Error: ${e}` }], isError: true }; }
 });
 
+// Tool 5 — Search issues
 server.tool("search_issues", "Search issues", {
   query: z.string().min(1), limit: z.number().min(1).max(50).default(10),
 }, async ({ query, limit }) => {
@@ -156,11 +155,10 @@ server.tool("search_issues", "Search issues", {
     if (!result.issues.length) return { content: [{ type: "text", text: `No results for: "${query}"` }] };
     const formatted = result.issues.map((i: any) => `#${i.number}: ${i.title}\n  ${i.state} | ${i.html_url}`).join("\n\n");
     return { content: [{ type: "text", text: `## Results (${result.total_count} total)\n\n${formatted}` }] };
-  } catch (e) {
-    return { content: [{ type: "text", text: `Error: ${e}` }], isError: true };
-  }
+  } catch (e) { return { content: [{ type: "text", text: `Error: ${e}` }], isError: true }; }
 });
 
+// Tool 6 — Paginated listing (MỚI)
 server.tool("list_issues_paginated", "Paginated listing", {
   owner: z.string(), repo: z.string(),
   state: z.enum(["open","closed","all"]).default("open"),
@@ -185,11 +183,10 @@ server.tool("list_issues_paginated", "Paginated listing", {
       header += ` — Page ${page}/${last}`;
     }
     return { content: [{ type: "text", text: `${header}\n\n${formatted}` }] };
-  } catch (e) {
-    return { content: [{ type: "text", text: `Error: ${e}` }], isError: true };
-  }
+  } catch (e) { return { content: [{ type: "text", text: `Error: ${e}` }], isError: true }; }
 });
 
+// Tool 7 — Batch label (MỚI)
 server.tool("batch_label_issues", "Batch label", {
   owner: z.string(), repo: z.string(),
   issue_numbers: z.array(z.number().int().positive()).min(1).max(25),
@@ -208,9 +205,10 @@ server.tool("batch_label_issues", "Batch label", {
 });
 
 // ════════════════════════════════════════
-// RESOURCES (3)
+// RESOURCES (3 resources)
 // ════════════════════════════════════════
 
+// Resource 1 — Issue detail dạng markdown
 server.resource("issue-detail",
   new ResourceTemplate("issue://{owner}/{repo}/{number}", { list: undefined }),
   async (uri, { owner, repo, number }) => {
@@ -222,6 +220,7 @@ server.resource("issue-detail",
   }
 );
 
+// Resource 2 — Comments dạng conversation thread
 server.resource("issue-comments",
   new ResourceTemplate("issue://{owner}/{repo}/{number}/comments", { list: undefined }),
   async (uri, { owner, repo, number }) => {
@@ -236,6 +235,7 @@ server.resource("issue-comments",
   }
 );
 
+// Resource 3 — Danh sách open issues
 server.resource("open-issues",
   new ResourceTemplate("issue://{owner}/{repo}/open", { list: undefined }),
   async (uri, { owner, repo }) => {
@@ -247,7 +247,7 @@ server.resource("open-issues",
 );
 
 // ════════════════════════════════════════
-// PROMPTS (3)
+// PROMPTS (3 prompts)
 // ════════════════════════════════════════
 
 server.prompt("triage-issue", "Triage GitHub issue", {
@@ -283,6 +283,118 @@ main().catch(e => { console.error("❌", e); process.exit(1); });
 
 ---
 
+## Giải Thích Resources (3 resources)
+
+Resources là **read-only data**—giống như file LLM có thể đọc. Mỗi resource có URI template + MIME type.
+
+### Resource 1 — `issue-detail`: Xem Issue Chi Tiết
+
+**URI:** `issue://{owner}/{repo}/{number}`
+
+**Code hoạt động:**
+1. Template lấy `{owner}`, `{repo}`, `{number}` từ URI
+2. Gọi `github.getIssue()` fetch từ GitHub API
+3. Trả về markdown với title, status, author, body
+
+**LLM nhận được:**
+```
+# Login broken
+**Status:** 🟢 Open
+**Author:** @user1
+**URL:** https://github.com/owner/repo/issues/42
+---
+Steps: click login → see error
+```
+
+**Resources vs Tools:** Resource là **data** (đọc, không side-effect). Tool là **hành động** (tạo/sửa/xóa). MCP phân tách rõ để host cache resource hiệu quả.
+
+### Resource 2 — `issue-comments`: Đọc Conversation Thread
+
+**URI:** `issue://{owner}/{repo}/{number}/comments`
+
+**Code hoạt động:**
+1. Fetch comments từ `/repos/{owner}/{repo}/issues/{number}/comments`
+2. Format mỗi comment thành section với `---` separator
+3. Nếu không có comments → "*No comments yet.*"
+
+**LLM nhận được:**
+```
+--- 
+**@alice** on 6/1/2026
+I can reproduce this.
+
+---
+**@bob** on 6/2/2026
+Fixed in PR #100.
+```
+
+### Resource 3 — `open-issues`: Danh Sách Open Issues
+
+**URI:** `issue://{owner}/{repo}/open`
+
+**Code hoạt động:**
+1. Gọi `github.listIssues(state: "open")`
+2. Format thành markdown list với hyperlink
+3. Empty state: "✨ No open issues!"
+
+**LLM nhận được:**
+```
+# Open Issues (3)
+
+- [#42](https://...): Login broken
+- [#43](https://...): Dark mode
+- [#44](https://...): API docs
+```
+
+**Tại sao useful?** Đây là "directory" resource—LLM đọc list này rồi chọn issue để đọc chi tiết qua `issue://.../42`.
+
+---
+
+## Giải Thích Prompts (3 prompts)
+
+Prompts là **reusable templates**—user chọn prompt, điền params, server render thành user message hướng dẫn LLM workflow cụ thể.
+
+### Prompt 1 — `triage-issue`: Guided Issue Analysis
+
+**Params:** `owner`, `repo`, `issue_number`
+
+User chọn prompt → form hiện 3 fields → submit → LLM được instruction:
+```
+Triage issue #42 in owner/repo.
+1. Severity — Bug, feature, or question?
+2. Labels — What fits?
+3. Priority — Now, sprint, or backlog?
+4. Assignee — Who should look?
+5. Next steps — What's missing?
+```
+
+LLM tự động gọi `get_issue`, phân tích, trả về triage structured.
+
+### Prompt 2 — `weekly-summary`: One-Click Report
+
+**Params:** `owner`, `repo`
+
+Giải quyết vấn đề: LLM không consistent khi không có instruction rõ. Prompt lock down format mỗi lần.
+
+```
+Weekly summary for owner/repo.
+Group: New | Updated | Stale (30d+). Include count + list.
+```
+
+Kết quả luôn consistent—reliable, predictable.
+
+### Prompt 3 — `bug-report-template`: Structured Bug Form
+
+**Params:** (none)
+
+Render sẵn template bug report. LLM hỏi user chi tiết từng section rồi gọi `create_issue`.
+
+### Tại Sao Prompts Quan Trọng?
+
+LLMs cho kết quả **không consistent** nếu instruction mơ hồ. Prompts lock down workflow → user luôn nhận chất lượng giống nhau.
+
+---
+
 ## Build & Test
 
 ```bash
@@ -291,15 +403,36 @@ export GITHUB_TOKEN="ghp_your_token_here"
 npx @modelcontextprotocol/inspector node build/index.js
 ```
 
-Inspector UI có 3 tabs:
+Inspector UI hiện 3 tabs:
 
-- **Tools**: 7 tools — list, get, create, update, search, paginated, batch
-- **Resources**: 3 URI templates — `issue://{owner}/{repo}/{number}`, `/comments`, `/open`
-- **Prompts**: 3 templates — triage, weekly-summary, bug-report-template
+| Tab | Nội dung |
+|-----|----------|
+| 🛠 **Tools** | 7 tools — list, get, create, update, search, paginated, batch |
+| 📄 **Resources** | 3 URI templates — `issue://.../number`, `/comments`, `/open` |
+| 💬 **Prompts** | 3 templates — triage, summary, bug-report |
+
+### Test Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "github-issue-manager": {
+      "command": "node",
+      "args": ["/path/to/github-issue-mcp/build/index.js"],
+      "env": { "GITHUB_TOKEN": "ghp_your_token_here" }
+    }
+  }
+}
+```
+
+Thử:
+- *"What are open issues in my repo?"* → dùng `open-issues` resource
+- Gõ `/tri` → chọn prompt triage-issue → fill params
+- *"Add label bug to issues 1, 2, 3"* → gọi `batch_label_issues`
 
 ---
 
-## Tổng Kết
+## Tổng Kết Sau Day 2
 
 ```
 📁 github-issue-manager v1.0.1
@@ -308,11 +441,17 @@ Inspector UI có 3 tabs:
 └── 💬 Prompts (3): triage, weekly-summary, bug-report-template
 ```
 
-Full MCP citizen — cả 3 capabilities.
+| Capability | Count | Purpose |
+|-----------|-------|---------|
+| Tools | 7 | Actions — read/write GitHub issues |
+| Resources | 3 | Read-only data as markdown |
+| Prompts | 3 | Scaffolded workflows |
+
+Full MCP citizen — support cả 3 capabilities.
 
 ---
 
-**Day 3:** SSE transport + Docker. Server remote accessible.
+**Day 3:** SSE transport + Docker. Server accessible từ xa.
 
 ---
 
