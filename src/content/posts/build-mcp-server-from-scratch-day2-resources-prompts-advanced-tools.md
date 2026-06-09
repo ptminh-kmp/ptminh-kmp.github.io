@@ -355,30 +355,45 @@ server.tool(
         new URLSearchParams({ state, page: String(page), per_page: String(per_page), sort, direction });
 
       const response = await githubFetch(url);
-      if (!response.ok) throw new Error(`GitHub API: ${response.status} ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`GitHub API: ${response.status} ${response.statusText}`);
+      }
 
       const issues: any[] = await response.json() as any[];
       const pagination = parseLinkHeader(response.headers.get("link"));
 
       if (issues.length === 0) {
-        return { content: [{ type: "text", text: `No issues on page ${page} of ${owner}/${repo}.` }] };
+        return {
+          content: [{ type: "text", text: `No issues found on page ${page} of ${owner}/${repo}.` }],
+        };
       }
 
       const formatted = issues.map((issue: any) => {
         const labels = issue.labels.map((l: any) => `[${l.name}]`).join(" ");
-        return `#${issue.number}: ${issue.title}\n  ${issue.state} | 💬 ${issue.comments}\n  ${issue.html_url}`;
+        return [
+          `#${issue.number}: ${issue.title}`,
+          `  ${issue.state} | 💬 ${issue.comments} | ${issue.html_url}`,
+        ].join("\n");
       }).join("\n\n");
 
+      // Build header with pagination info
       let header = `## Issues in ${owner}/${repo} (page ${page})`;
       if (pagination.last) {
-        const lastPage = parseInt(new URL(pagination.last).searchParams.get("page") || "1", 10);
+        const lastPage = parseInt(
+          new URL(pagination.last).searchParams.get("page") || "1", 10
+        );
         header += `\n📄 Page ${page} of ${lastPage}`;
       }
       if (pagination.next) header += `\n➡️ Next page available`;
 
-      return { content: [{ type: "text", text: `${header}\n\n${formatted}` }] };
+      return {
+        content: [{ type: "text", text: `${header}\n\n${formatted}` }],
+      };
     } catch (error) {
-      return { content: [{ type: "text", text: `Error: ${error}` }], isError: true };
+      return {
+        content: [{ type: "text", text: `Error: ${error}` }],
+        isError: true,
+      };
     }
   },
 );
@@ -396,7 +411,7 @@ server.tool(
   async ({ owner, repo, issue_numbers, labels }) => {
     const results: { number: number; success: boolean; error?: string }[] = [];
 
-    // Process sequentially to avoid GitHub rate limiting
+    // Process each issue sequentially to avoid rate limiting
     for (const issueNumber of issue_numbers) {
       try {
         await github.updateIssue(owner, repo, issueNumber, { labels });
@@ -431,7 +446,7 @@ server.tool(
 // ──── RESOURCES ────
 // ════════════════════════════════════════════════════════════
 
-// Resource 1 — Single issue as markdown
+// Resource 1 — Single issue as markdown content
 server.resource(
   "issue-detail",
   new ResourceTemplate("issue://{owner}/{repo}/{number}", { list: undefined }),
@@ -442,26 +457,38 @@ server.resource(
         repo as string,
         parseInt(number as string, 10)
       );
+
       const labels = issue.labels.map((l: any) => `\`${l.name}\``).join(" ");
       const assignees = issue.assignees.map((a: any) => `@${a.login}`).join(", ");
 
       const markdown = [
         `# ${issue.title}`,
+        ``,
         `**Status:** ${issue.state === "open" ? "🟢 Open" : "🔴 Closed"}`,
-        `**Author:** @${issue.user.login} | **Labels:** ${labels || "*none*"}`,
+        `**Author:** @${issue.user.login} | **Created:** ${new Date(issue.created_at).toLocaleDateString()}`,
+        `**Labels:** ${labels || "*none*"}`,
+        `**Assignees:** ${assignees || "*none*"}`,
         `**URL:** ${issue.html_url}`,
+        ``,
         `---`,
-        issue.body || "*No description*",
+        ``,
+        issue.body || "*No description provided.*",
       ].join("\n");
 
-      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: markdown }] };
+      return {
+        contents: [{
+          uri: uri.href,
+          mimeType: "text/markdown",
+          text: markdown,
+        }],
+      };
     } catch (error) {
       throw new Error(`Failed to fetch issue: ${error}`);
     }
   },
 );
 
-// Resource 2 — Issue comments as threaded conversation
+// Resource 2 — Issue comments as a threaded conversation
 server.resource(
   "issue-comments",
   new ResourceTemplate("issue://{owner}/{repo}/{number}/comments", { list: undefined }),
@@ -469,19 +496,42 @@ server.resource(
     try {
       const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues/${number}/comments`;
       const response = await githubFetch(url);
-      if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
 
-      const comments: any[] = await response.json() as any[];
-      if (comments.length === 0) {
-        return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `*No comments yet.*` }] };
+      if (!response.ok) {
+        throw new Error(`GitHub API: ${response.status}`);
       }
 
-      const formatted = comments.map((c: any) => {
-        const date = new Date(c.created_at).toLocaleDateString();
-        return `---\n**@${c.user.login}** on ${date}\n\n${c.body || "*No text*"}`;
-      }).join("\n\n");
+      const comments: any[] = await response.json() as any[];
 
-      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `# Comments for #${number}\n\n${formatted}` }] };
+      if (comments.length === 0) {
+        return {
+          contents: [{
+            uri: uri.href,
+            mimeType: "text/markdown",
+            text: `*No comments yet.*`,
+          }],
+        };
+      }
+
+      const formatted = comments
+        .map((c: any) => {
+          const date = new Date(c.created_at).toLocaleDateString();
+          return [
+            `---`,
+            `**@${c.user.login}** commented on ${date}`,
+            ``,
+            c.body || "*No text*",
+          ].join("\n");
+        })
+        .join("\n\n");
+
+      return {
+        contents: [{
+          uri: uri.href,
+          mimeType: "text/markdown",
+          text: `# Comments for #${number}\n\n${formatted}`,
+        }],
+      };
     } catch (error) {
       throw new Error(`Failed to fetch comments: ${error}`);
     }
@@ -495,13 +545,32 @@ server.resource(
   async (uri, { owner, repo }) => {
     try {
       const issues = await github.listIssues(owner as string, repo as string, "open");
+
       if (issues.length === 0) {
-        return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `✨ No open issues!` }] };
+        return {
+          contents: [{
+            uri: uri.href,
+            mimeType: "text/markdown",
+            text: `✨ No open issues!`,
+          }],
+        };
       }
-      const list = issues.map((issue: any) => {
-        return `- [#${issue.number}](${issue.html_url}): ${issue.title}`;
-      }).join("\n");
-      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `# Open Issues (${issues.length})\n\n${list}` }] };
+
+      const list = issues
+        .map((issue: any) => {
+          return [
+            `- **[#${issue.number}](${issue.html_url}): ${issue.title}**`,
+          ].join("\n");
+        })
+        .join("\n");
+
+      return {
+        contents: [{
+          uri: uri.href,
+          mimeType: "text/markdown",
+          text: `# Open Issues in ${owner}/${repo}\n\nTotal: ${issues.length}\n\n${list}`,
+        }],
+      };
     } catch (error) {
       throw new Error(`Failed to list issues: ${error}`);
     }
@@ -528,12 +597,15 @@ server.prompt(
         type: "text",
         text: [
           `Please triage issue #${issue_number} in ${owner}/${repo}.`,
-          `Use get_issue tool. Analyze:`,
-          `1. Severity — Bug, feature, or question?`,
-          `2. Labels — What fits?`,
-          `3. Priority — Now, sprint, or backlog?`,
-          `4. Assignee — Who should look?`,
-          `5. Next steps — What's missing?`,
+          ``,
+          `First, fetch the issue details using get_issue tool. Then analyze:`,
+          ``,
+          `1. **Severity Assessment** — Bug, feature request, or question?`,
+          `   - If bug: critical (blocks work), major (breaks feature), minor (cosmetic)?`,
+          `2. **Label Suggestions** — What labels fit?`,
+          `3. **Priority** — Immediate, this sprint, or backlog?`,
+          `4. **Assignee** — Which team or person should look?`,
+          `5. **Next Steps** — What should the reporter do next?`,
         ].join("\n"),
       },
     }],
@@ -554,11 +626,12 @@ server.prompt(
       content: {
         type: "text",
         text: [
-          `Weekly summary for ${owner}/${repo}.`,
-          `1. List open issues`,
-          `2. Group: 🔥 New | 📝 Updated | 🧊 Stale (30d+)`,
-          `3. Include number, title, labels, last update`,
-          `4. Count summary at top`,
+          `Generate a weekly summary for ${owner}/${repo}.`,
+          ``,
+          `1. List open issues using the open-issues resource`,
+          `2. Group: 🔥 New this week  |  📝 Recently updated  |  🧊 Stale (30+ days)`,
+          `3. Include number, title, labels, last update for each`,
+          `4. Give a count summary at top`,
         ].join("\n"),
       },
     }],
@@ -577,11 +650,13 @@ server.prompt(
         type: "text",
         text: [
           `Use this template to file a bug report:`,
+          ``,
           `## Bug Report`,
           `### Describe the Bug`,
           `### To Reproduce`,
           `### Expected Behavior`,
-          `### Environment`,
+          `### Screenshots`,
+          `### Environment (OS, Browser, Version)`,
         ].join("\n"),
       },
     }],
@@ -597,6 +672,8 @@ async function main() {
   await server.connect(transport);
   console.error("✅ github-issue-manager running on stdio");
   console.error("   Capabilities: 7 tools · 3 resources · 3 prompts");
+  console.error("   Resources: issue://{owner}/{repo}/{number}, /comments, /open");
+  console.error("   Prompts: triage-issue, weekly-summary, bug-report-template");
 }
 
 main().catch((error) => {
@@ -607,7 +684,151 @@ main().catch((error) => {
 
 ---
 
-## Step 3: Build & Test
+## Step 3: Resources Deep Dive
+
+The full code above includes 3 resources. Let's examine each one.
+
+### Resource 1 — `issue-detail`: Read a Single Issue
+
+**URI template:** `issue://{owner}/{repo}/{number}`
+
+This resource returns a GitHub issue as formatted markdown. The LLM reads it like a document — title, status, labels, and body all in one readable format.
+
+**How the code works:**
+1. The template extracts `{owner}`, `{repo}`, `{number}` from the URI
+2. We call `github.getIssue()` to fetch the issue from GitHub
+3. We assemble a markdown string with all key fields
+4. We return it with `mimeType: "text/markdown"` — tells the LLM it's readable text
+
+**What the LLM receives:**
+```markdown
+# My Issue Title
+**Status:** 🟢 Open
+**Author:** @user1 | **Labels:** `bug` `priority`
+**URL:** https://github.com/owner/repo/issues/42
+---
+Steps to reproduce: 1. Click X 2. See error Y
+```
+
+**Why this matters:** Without resources, the LLM would call `get_issue` tool every time. With resources, the host fetches content *before* the LLM starts generating — it's part of the context from the start.
+
+### Resource 2 — `issue-comments`: Read the Discussion Thread
+
+**URI template:** `issue://{owner}/{repo}/{number}/comments`
+
+Returns all comments as a threaded conversation. Each comment has author + date.
+
+**How the code works:**
+1. Fetch comments directly from GitHub REST API
+2. If no comments, return friendly message
+3. Otherwise, map each comment to markdown with `---` separator
+
+**What the LLM receives:**
+```markdown
+# Comments for #42
+
+---
+**@alice** commented on 6/1/2026
+I can reproduce this on macOS.
+
+---
+**@bob** commented on 6/2/2026
+Fixed in PR #100.
+```
+
+### Resource 3 — `open-issues`: Overview of All Open Issues
+
+**URI template:** `issue://{owner}/{repo}/open`
+
+Quick summary of all open issues — great for "what's outstanding?".
+
+**How the code works:**
+1. Call `github.listIssues()` with state `"open"`
+2. Format as markdown list with hyperlinks
+3. Empty state: "✨ No open issues!"
+
+**What the LLM receives:**
+```markdown
+# Open Issues (3)
+
+- [#42](https://...): Login button broken
+- [#43](https...): Dark mode toggle
+- [#44](https...): API docs
+```
+
+### Resources vs Tools: Why Both?
+
+| Situation | Uses | Reason |
+|-----------|------|--------|
+| "What's the status of #42?" | Resource | Read-only, formatted content |
+| "Close issue #42" | Tool `update_issue` | Side-effect, changes state |
+| "What open issues exist?" | Resource | Read-only LLM browses |
+| "Set labels on #42" | Tool `update_issue` | Side-effect |
+
+**Resources = files (read-only, structured). Tools = commands (can modify state).** MCP separates them so the host caches resources efficiently and requires confirmation for tool calls.
+
+---
+
+## Step 4: Prompts Deep Dive
+
+Prompts are reusable templates. User selects a prompt → server renders structured instructions → LLM follows the workflow.
+
+### Prompt 1 — `triage-issue`: Guided Issue Analysis
+
+**Parameters:** `owner`, `repo`, `issue_number`
+
+When user invokes:
+1. User opens prompt menu in Claude Desktop
+2. Selects "triage-issue"
+3. Form appears: owner, repo, issue_number
+4. User fills and submits
+5. Server renders analysis request
+6. LLM calls `get_issue`, analyzes, returns structured triage
+
+**Rendered:**
+```
+Please triage issue #42 in owner/repo.
+1. Severity — Bug, feature, or question?
+2. Labels — What fits?
+3. Priority — Now, this sprint, or backlog?
+4. Assignee — Who should look?
+5. Next steps — What's missing?
+```
+
+### Prompt 2 — `weekly-summary`: One-Click Reporting
+
+Without this prompt, "give me a weekly summary" produces inconsistent results. The prompt standardizes the format every time.
+
+**Rendered:**
+```
+1. List open issues
+2. Group: 🔥 New | 📝 Updated | 🧊 Stale (30d+)
+3. Include number, title, labels, last update
+4. Count summary at top
+```
+
+Result is always the same structure — reliable, predictable.
+
+### Prompt 3 — `bug-report-template`: Structured Data Entry
+
+Returns a blank template. The LLM asks the user for details and calls `create_issue` when complete.
+
+**Rendered:**
+```
+## Bug Report
+### Describe the Bug
+### To Reproduce
+### Expected Behavior
+### Environment
+```
+
+### Why Prompts Matter
+
+**LLMs produce inconsistent output with vague instructions.** A prompt locks down the workflow — user always gets the same quality of result.
+
+---
+
+## Step 5: Build & Test
 
 ```bash
 npm run build
@@ -620,7 +841,7 @@ Open Inspector. Three tabs:
 **🛠 Tools Tab** — All 7 tools listed. Test each with params.
 
 **📄 Resources Tab** — Read each URI template:
-- `issue://myuser/myrepo/1` → markdown with issue details
+- `issue://myuser/myrepo/1` → markdown with issue detail
 - `issue://myuser/myrepo/1/comments` → threaded conversation
 - `issue://myuser/myrepo/open` → open issues overview
 
@@ -640,36 +861,10 @@ Open Inspector. Three tabs:
 }
 ```
 
-Try: *"What are the open issues?"* → uses `open-issues` resource.
-
-Try: Type `/` → select `weekly-summary` → structured report.
-
----
-
-## Deep Dive: How Resources & Prompts Work
-
-### Resources Flow
-
-```
-LLM: "Tell me about issue #42"
-  → Host calls resources/read("issue://myuser/myrepo/42")
-  → Server returns markdown
-  → LLM reads it as context
-```
-
-Key: Resources are **read-only data** the LLM browses like a filesystem. Tools are **actions** the LLM takes.
-
-### Prompts Flow
-
-```
-User opens prompt menu → selects "triage-issue"
-  → Form appears (owner, repo, issue_number)
-  → User fills values → Server renders template
-  → LLM receives rendered text as first message
-  → LLM calls get_issue, analyzes, returns structured triage
-```
-
-Key: Prompts are **scaffolding** that ensures correct workflow.
+Try:
+- *"What are open issues in ptminh-kmp/ptminh-kmp.github.io?"* → reads resource
+- Type `/` → select `weekly-summary` → structured report
+- *"Add label 'bug' to issues 1, 2, 3"* → batch_label tool
 
 ---
 
@@ -688,13 +883,20 @@ Key: Prompts are **scaffolding** that ensures correct workflow.
 | Resources | 3 | Read-only data as markdown |
 | Prompts | 3 | Scaffolded workflows |
 
+Your server is now a **full MCP citizen** — supporting all three capabilities.
+
 ---
 
 ## Prepare for Day 3
 
-Right now: stdio transport, localhost only.
+Current: stdio transport, localhost only.
 
-**Day 3:** **SSE transport** + Docker. Your server accessible from any machine.
+**Day 3:** SSE transport + Docker. Accessible from any machine.
+
+```
+Day 2: Child process (localhost only)
+Day 3: HTTP server (network accessible)
+```
 
 ---
 
@@ -708,4 +910,4 @@ Right now: stdio transport, localhost only.
 
 ---
 
-*Series: Building an MCP Server from Scratch. Day 2: Resources, prompts, and advanced tools with pagination and batch operations.*
+*Series: Building an MCP Server from Scratch. Day 2: Resources (read-only issue content), Prompts (triage, summary, bug report), and Advanced Tools (paginated listing, batch labeling). Full TypeScript source code included.*
