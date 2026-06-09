@@ -40,471 +40,292 @@ By the end of this post, your server will be a **full MCP citizen** — supporti
 
 ## Recap: Where We Left Off
 
+```bash
+# Project structure after Day 1
+github-issue-mcp/
+├── src/
+│   ├── index.ts         # Entry point — 5 tools via StdioServerTransport
+│   └── github-client.ts # GitHub API client
+├── package.json
+├── tsconfig.json
+└── build/
+```
+
+The `src/index.ts` from Day 1 had `list_issues`, `get_issue`, `create_issue`, `update_issue`, and `search_issues`. Today we replace that file with a much richer version: 7 tools, 3 resources, 3 prompts.
+
+---
+
+## Step 1: Install (if needed)
+
+```bash
+cd github-issue-mcp
+npm ls @modelcontextprotocol/sdk zod
+
+# If missing:
+npm install @modelcontextprotocol/sdk zod
+```
+
+---
+
+## Step 2: The Complete Server Code (src/index.ts)
+
+Replace the entire `src/index.ts` with this file. All 7 tools, 3 resources, and 3 prompts in one place, clearly separated by section headers.
+
 ```typescript
-// src/index.ts — the entry point from Day 1
+// src/index.ts — Complete MCP server (Tools + Resources + Prompts)
+// Uses stdio transport. Day 3 switches to SSE for remote access.
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { GitHubClient } from "./github-client.js";
 
+// ════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ════════════════════════════════════════════════════════════
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-if (!GITHUB_TOKEN) { process.exit(1); }
+if (!GITHUB_TOKEN) {
+  console.error("❌ GITHUB_TOKEN environment variable is required");
+  console.error("   Create one at: https://github.com/settings/tokens");
+  console.error("   Required scopes: issues:read, issues:write");
+  process.exit(1);
+}
+
+// ════════════════════════════════════════════════════════════
+// INITIALIZE
+// ════════════════════════════════════════════════════════════
 
 const server = new McpServer({
   name: "github-issue-manager",
-  version: "1.0.0",
+  version: "1.0.1",   // Bumped from 1.0.0 — now with resources + prompts
 });
 
 const github = new GitHubClient(GITHUB_TOKEN);
+const GITHUB_API_BASE = "https://api.github.com";
 
-// Tool 1–5 from Day 1: list_issues, get_issue, create_issue, update_issue, search_issues
+// Log startup info — mask token for safety
+console.error(`🚀 Starting GitHub Issue Manager v1.0.1`);
+console.error(`   Token: ${GITHUB_TOKEN.slice(0, 8)}...${GITHUB_TOKEN.slice(-4)}`);
 
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("✅ Server running on stdio");
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+
+/**
+ * Parse GitHub's pagination Link header.
+ * 
+ * GitHub returns a header like:
+ *   <https://api.github.com/...?page=2>; rel="next",
+ *   <https://api.github.com/...?page=5>; rel="last"
+ * 
+ * Returns { next, last, first, prev } as URL strings.
+ */
+function parseLinkHeader(link: string | null): Record<string, string> {
+  if (!link) return {};
+  const result: Record<string, string> = {};
+  for (const part of link.split(", ")) {
+    const match = part.match(/<([^>]+)>;\s*rel="([^"]+)"/);
+    if (match) result[match[2]] = match[1];
+  }
+  return result;
 }
-main();
-```
 
-We'll add Resources and Prompts to this same file (or split into modules — your call).
+/**
+ * Authenticated fetch against the GitHub API.
+ * Every call includes Bearer token, correct Accept header,
+ * User-Agent (required by GitHub), and API version.
+ */
+async function githubFetch(url: string) {
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      Accept: "application/vnd.github+json",
+      "User-Agent": "github-issue-mcp-server/1.0",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+  return response;
+}
 
----
+// ════════════════════════════════════════════════════════════
+// ──── TOOLS ────
+// ════════════════════════════════════════════════════════════
 
-## Part 1: Adding Resources
-
-**Resources** are how MCP servers expose data to the client. Think of them as read-only files that the LLM can browse and read. Each resource has a URI, a name, and a MIME type.
-
-### What resources should our issue manager expose?
-
-| Resource URI | Description |
-|-------------|-------------|
-| `issue://{owner}/{repo}/{number}` | A single issue as markdown |
-| `issue://{owner}/{repo}/{number}/comments` | Issue comments as a thread |
-| `issue://{owner}/{repo}/open` | List of open issues |
-
-### Step 1: Add resource providers
-
-Add these imports and code to `src/index.ts`:
-
-```typescript
-import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
-```
-
-### Step 2: Register resources
-
-```typescript
-// ============================================================
-// Resource 1: Single issue as markdown content
-// ============================================================
-server.resource(
-  "issue-detail",
-  new ResourceTemplate("issue://{owner}/{repo}/{number}", { list: undefined }),
-  async (uri, { owner, repo, number }) => {
-    try {
-      const issue = await github.getIssue(
-        owner as string,
-        repo as string,
-        parseInt(number as string, 10)
-      );
-
-      const labels = issue.labels.map((l) => `\`${l.name}\``).join(" ");
-      const assignees = issue.assignees.map((a) => `@${a.login}`).join(", ");
-
-      const markdown = [
-        `# ${issue.title}`,
-        ``,
-        `**Status:** ${issue.state === "open" ? "🟢 Open" : "🔴 Closed"}`,
-        `**Author:** @${issue.user.login} | **Created:** ${new Date(issue.created_at).toLocaleDateString()}`,
-        `**Labels:** ${labels || "*none*"}`,
-        `**Assignees:** ${assignees || "*none*"}`,
-        `**URL:** ${issue.html_url}`,
-        ``,
-        `---`,
-        ``,
-        issue.body || "*No description provided.*",
-      ].join("\n");
-
-      return {
-        contents: [
-          {
-            uri: uri.href,
-            mimeType: "text/markdown",
-            text: markdown,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new Error(`Failed to fetch issue: ${error}`);
-    }
-  },
-);
-```
-
-### Step 3: Comments as a resource
-
-```typescript
-// ============================================================
-// Resource 2: Issue comments as a threaded conversation
-// ============================================================
-server.resource(
-  "issue-comments",
-  new ResourceTemplate("issue://{owner}/{repo}/{number}/comments", { list: undefined }),
-  async (uri, { owner, repo, number }) => {
-    try {
-      const url = `https://api.github.com/repos/${owner}/${repo}/issues/${number}/comments`;
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${GITHUB_TOKEN}`,
-          Accept: "application/vnd.github+json",
-          "User-Agent": "github-issue-mcp-server/1.0",
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`GitHub API: ${response.status}`);
-      }
-
-      const comments: any[] = await response.json() as any[];
-      
-      if (comments.length === 0) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              mimeType: "text/markdown",
-              text: `# Comments for ${owner}/${repo}#${number}\n\n*No comments yet.*`,
-            },
-          ],
-        };
-      }
-
-      const formatted = comments.map((c) => {
-        const date = new Date(c.created_at).toLocaleDateString();
-        return [
-          `---`,
-          `**@${c.user.login}** commented on ${date}`,
-          ``,
-          c.body || "*No text*",
-        ].join("\n");
-      }).join("\n\n");
-
-      return {
-        contents: [
-          {
-            uri: uri.href,
-            mimeType: "text/markdown",
-            text: `# Comments for ${owner}/${repo}#${number}\n\n${formatted}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new Error(`Failed to fetch comments: ${error}`);
-    }
-  },
-);
-```
-
-### Step 4: Open issues listing as a resource
-
-```typescript
-// ============================================================
-// Resource 3: Open issues listing
-// ============================================================
-server.resource(
-  "open-issues",
-  new ResourceTemplate("issue://{owner}/{repo}/open", { list: undefined }),
-  async (uri, { owner, repo }) => {
-    try {
-      const issues = await github.listIssues(owner as string, repo as string, "open");
-
-      if (issues.length === 0) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              mimeType: "text/markdown",
-              text: `# Open Issues in ${owner}/${repo}\n\n✨ No open issues!`,
-            },
-          ],
-        };
-      }
-
-      const list = issues.map((issue) => {
-        return [
-          `- **[#${issue.number}](${issue.html_url}): ${issue.title}**`,
-          `  _Labels:_ ${issue.labels.map((l) => `\`${l.name}\``).join(", ") || "none"} | _Updated:_ ${new Date(issue.updated_at).toLocaleDateString()}`,
-        ].join("\n");
-      }).join("\n");
-
-      return {
-        contents: [
-          {
-            uri: uri.href,
-            mimeType: "text/markdown",
-            text: `# Open Issues in ${owner}/${repo}\n\nTotal: ${issues.length}\n\n${list}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new Error(`Failed to list issues: ${error}`);
-    }
-  },
-);
-```
-
-### How Resources Work
-
-The client discovers resources by calling `resources/list` (at connection time, MCP hosts like Claude Desktop automatically enumerate them). When the LLM needs data, it calls `resources/read` with the URI:
-
-```
-LLM: "What are the details of issue #42 in my repo?"
-  → Client calls resources/read on "issue://owner/repo/42"
-  → Returns markdown to the LLM
-  → LLM reads it as context
-```
-
-This is different from tools. Tools are _actions_ the LLM takes. Resources are _information_ the LLM reads. Tools modify state; resources don't.
-
----
-
-## Part 2: Adding Prompts
-
-**Prompts** are reusable templates that users can invoke. Think of them as macros — the user selects a prompt, fills in parameters, and gets structured output.
-
-### What prompts should we add?
-
-| Prompt | Description | Parameters |
-|--------|-------------|------------|
-| `triage-issue` | Template for triaging a new issue | owner, repo, issue_number |
-| `weekly-summary` | Summary of the week's issue activity | owner, repo |
-| `bug-report-template` | Template for filing a bug report | (none — self-contained) |
-
-### Step 5: Add prompts
-
-```typescript
-// ============================================================
-// Prompt 1: Triage an issue
-// ============================================================
-server.prompt(
-  "triage-issue",
-  "Template for triaging a new GitHub issue — analyze severity, suggest labels, and propose next steps",
-  {
-    owner: z.string().describe("Repository owner"),
-    repo: z.string().describe("Repository name"),
-    issue_number: z.number().int().positive().describe("Issue number to triage"),
-  },
-  ({ owner, repo, issue_number }) => ({
-    messages: [
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: [
-            `Please triage issue #${issue_number} in ${owner}/${repo}.`,
-            ``,
-            `First, fetch the issue details from the issue-detail resource.`,
-            `Then analyze:`,
-            ``,
-            `1. **Severity Assessment** — Is this a bug, feature request, or question?`,
-            `   - If bug: Is it critical (blocks work), major (breaks feature), or minor (cosmetic)?`,
-            `2. **Label Suggestions** — What labels would you recommend based on the content?`,
-            `3. **Priority** — Should this be handled immediately, this sprint, or backlog?`,
-            `4. **Assignee** — Based on the issue content, which team or person should look at this?`,
-            `5. **Next Steps** — What should the reporter do next, or what info is missing?`,
-            ``,
-            `Use the get_issue tool to fetch the details if you need to.`,
-          ].join("\n"),
-        },
-      },
-    ],
-  }),
-);
-```
-
-### Step 6: Weekly summary prompt
-
-```typescript
-// ============================================================
-// Prompt 2: Weekly issue summary
-// ============================================================
-server.prompt(
-  "weekly-summary",
-  "Generate a summary of the week's issue activity for a repository",
-  {
-    owner: z.string().describe("Repository owner"),
-    repo: z.string().describe("Repository name"),
-  },
-  ({ owner, repo }) => ({
-    messages: [
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: [
-            `Generate a weekly summary for ${owner}/${repo}.`,
-            ``,
-            `Please:`,
-            `1. List all open issues using the open-issues resource`,
-            `2. For each issue, check if it was created or updated this week`,
-            `3. Group them into:`,
-            `   - 🔥 **New this week** (created within 7 days)`,
-            `   - 📝 **Recently updated** (updated within 7 days)`,
-            `   - 🧊 **Stale** (no activity for 30+ days)`,
-            `4. For each issue, include its number, title, labels, and last update date`,
-            `5. Give a count summary at the top`,
-            ``,
-            `Format as a clean markdown report.`,
-          ].join("\n"),
-        },
-      },
-    ],
-  }),
-);
-```
-
-### Step 7: Bug report template
-
-```typescript
-// ============================================================
-// Prompt 3: Bug report template (no parameters — self-contained)
-// ============================================================
-server.prompt(
-  "bug-report-template",
-  "Template for filing a bug report on GitHub — pre-formatted with all required fields",
-  {},
-  () => ({
-    messages: [
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: [
-            `Please create an issue using the following bug report template. `,
-            `Ask me for the missing details (repo, title, description) if I haven't provided them.`,
-            ``,
-            `## Bug Report Template`,
-            ``,
-            `### Describe the Bug`,
-            `<!-- A clear and concise description of what the bug is -->`,
-            ``,
-            `### To Reproduce`,
-            `1. Go to '...'`,
-            `2. Click on '...'`,
-            `3. Scroll down to '...'`,
-            `4. See error`,
-            ``,
-            `### Expected Behavior`,
-            `<!-- What should happen instead -->`,
-            ``,
-            `### Screenshots`,
-            `<!-- If applicable, add screenshots -->`,
-            ``,
-            `### Environment`,
-            `- OS: [e.g. macOS 15]`,
-            `- Browser: [e.g. Chrome 125]`,
-            `- Version: [e.g. 1.2.3]`,
-            ``,
-            `### Additional Context`,
-            `<!-- Add any other context -->`,
-          ].join("\n"),
-        },
-      },
-    ],
-  }),
-);
-```
-
-### How Prompts Work
-
-When a user invokes a prompt in Claude Desktop:
-
-1. User selects "weekly-summary" from the prompt menu
-2. User enters owner and repo
-3. The prompt template is rendered with the parameters
-4. The rendered text is sent as a user message to the LLM
-5. The LLM follows the instructions, using tools and resources as needed
-
-Prompts are essentially **scaffolding** for common workflows. They guide the LLM to use your tools and resources in the right way.
-
----
-
-## Part 3: Adding Advanced Tools
-
-Resources and prompts are great, but let's make our tools more powerful too.
-
-### Step 8: Paginated issue listing
-
-```typescript
-// ============================================================
-// Advanced Tool: List all issues with pagination
-// ============================================================
+// Tool 1 — List issues (from Day 1, enhanced formatting)
 server.tool(
-  "list_issues_paginated",
-  "List issues with full pagination support for large repositories",
+  "list_issues",
+  "List issues from a GitHub repository, filtered by state",
   {
-    owner: z.string().describe("Repository owner"),
+    owner: z.string().describe("Repository owner (user or organization)"),
     repo: z.string().describe("Repository name"),
-    state: z.enum(["open", "closed", "all"]).default("open"),
-    page: z.number().int().min(1).default(1).describe("Page number"),
-    per_page: z.number().int().min(1).max(100).default(30).describe("Items per page"),
-    sort: z.enum(["created", "updated", "comments"]).default("updated").describe("Sort field"),
-    direction: z.enum(["asc", "desc"]).default("desc").describe("Sort direction"),
+    state: z.enum(["open", "closed", "all"]).default("open").describe("Issue state filter"),
+    limit: z.number().min(1).max(100).default(20).describe("Maximum issues to return"),
   },
-  async ({ owner, repo, state, page, per_page, sort, direction }) => {
+  async ({ owner, repo, state, limit }) => {
     try {
-      const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues?` +
-        new URLSearchParams({
-          state,
-          page: String(page),
-          per_page: String(per_page),
-          sort,
-          direction,
-        });
-
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${GITHUB_TOKEN}`,
-          Accept: "application/vnd.github+json",
-          "User-Agent": "github-issue-mcp-server/1.0",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`GitHub API: ${response.status}`);
-      }
-
-      const issues: GitHubIssue[] = await response.json() as GitHubIssue[];
-      
-      // Parse Link header for pagination info
-      const linkHeader = response.headers.get("link");
-      const pagination = this.parseLinkHeader(linkHeader);
+      const issues = await github.listIssues(owner, repo, state, limit);
 
       if (issues.length === 0) {
         return {
-          content: [{ type: "text", text: `No issues found on page ${page}.` }],
+          content: [{ type: "text", text: `No ${state} issues found in ${owner}/${repo}.` }],
         };
       }
 
-      const formatted = issues.map((issue) => {
-        const labels = issue.labels.map((l) => `[${l.name}]`).join(" ");
+      // Format each issue with labels, assignees, dates
+      const formatted = issues.map((issue: any) => {
+        const labels = issue.labels.map((l: any) => `[${l.name}]`).join(" ");
+        const assignees = issue.assignees.map((a: any) => `@${a.login}`).join(", ");
         return [
           `#${issue.number}: ${issue.title}`,
-          `  ${issue.state} | ${issue.created_at.slice(0, 10)} | 💬 ${issue.comments}`,
+          `  State: ${issue.state} | Created: ${issue.created_at.slice(0, 10)} | Comments: ${issue.comments}`,
           `  Labels: ${labels || "(none)"}`,
-          `  ${issue.html_url}`,
+          `  Assignees: ${assignees || "(none)"}`,
+          `  URL: ${issue.html_url}`,
         ].join("\n");
       }).join("\n\n");
 
       return {
         content: [{
           type: "text",
-          text: [
-            `## Issues in ${owner}/${repo} (page ${page})`,
-            pagination.last ? `\n📄 Pages: ${pagination.last}` : "",
-            `\n\n${formatted}`,
-          ].join(""),
+          text: `## Issues in ${owner}/${repo} (${state})\n\n${formatted}`,
         }],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error listing issues: ${error}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+// Tool 2 — Get single issue (from Day 1)
+server.tool(
+  "get_issue",
+  "Get detailed information about a single GitHub issue by number",
+  {
+    owner: z.string().describe("Repository owner"),
+    repo: z.string().describe("Repository name"),
+    issue_number: z.number().int().positive().describe("Issue number (e.g., 42)"),
+  },
+  async ({ owner, repo, issue_number }) => {
+    try {
+      const issue = await github.getIssue(owner, repo, issue_number);
+      const labels = issue.labels.map((l: any) => `[${l.name}]`).join(" ");
+      const assignees = issue.assignees.map((a: any) => `@${a.login}`).join(", ");
+
+      const details = [
+        `# ${issue.title}`,
+        `**Issue #${issue.number}** | **State:** ${issue.state}`,
+        `**Author:** @${issue.user.login} | **Created:** ${issue.created_at} | **Updated:** ${issue.updated_at}`,
+        `**Labels:** ${labels || "(none)"}`,
+        `**Assignees:** ${assignees || "(none)"}`,
+        `**Comments:** ${issue.comments}`,
+        `**URL:** ${issue.html_url}`,
+        ``,
+        `---`,
+        issue.body || "*No description provided*",
+      ].join("\n");
+
+      return { content: [{ type: "text", text: details }] };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error fetching issue: ${error}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+// Tool 3 — Create issue (from Day 1)
+server.tool(
+  "create_issue",
+  "Create a new issue in a GitHub repository",
+  {
+    owner: z.string().describe("Repository owner"),
+    repo: z.string().describe("Repository name"),
+    title: z.string().min(1).max(256).describe("Issue title"),
+    body: z.string().optional().describe("Issue body/description (Markdown)"),
+    labels: z.array(z.string()).optional().describe("Labels to apply (e.g., ['bug'])"),
+    assignees: z.array(z.string()).optional().describe("Usernames to assign (e.g., ['user1'])"),
+  },
+  async ({ owner, repo, title, body, labels, assignees }) => {
+    try {
+      const issue = await github.createIssue(owner, repo, { title, body, labels, assignees });
+      return {
+        content: [{
+          type: "text",
+          text: `✅ Issue created!\n**#${issue.number}:** ${issue.title}\n**URL:** ${issue.html_url}`,
+        }],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error creating issue: ${error}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+// Tool 4 — Update issue (from Day 1)
+server.tool(
+  "update_issue",
+  "Update an existing issue — change title, body, labels, assignees, or close/reopen",
+  {
+    owner: z.string().describe("Repository owner"),
+    repo: z.string().describe("Repository name"),
+    issue_number: z.number().int().positive().describe("Issue number to update"),
+    title: z.string().max(256).optional().describe("New title"),
+    body: z.string().optional().describe("New body"),
+    state: z.enum(["open", "closed"]).optional().describe("Close or reopen the issue"),
+    labels: z.array(z.string()).optional().describe("New labels"),
+    assignees: z.array(z.string()).optional().describe("New assignees"),
+  },
+  async ({ owner, repo, issue_number, title, body, state, labels, assignees }) => {
+    try {
+      const issue = await github.updateIssue(owner, repo, issue_number, {
+        title, body, state, labels, assignees,
+      });
+      return {
+        content: [{
+          type: "text",
+          text: `✅ Issue #${issue_number} updated!\n` +
+            `**#${issue.number}:** ${issue.title}\n**State:** ${issue.state}\n**URL:** ${issue.html_url}`,
+        }],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error updating issue: ${error}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+// Tool 5 — Search issues (from Day 1)
+server.tool(
+  "search_issues",
+  "Search GitHub issues across repositories using GitHub's search syntax",
+  {
+    query: z.string().min(1).describe("Search query (e.g., 'repo:owner/name is:open bug')"),
+    limit: z.number().min(1).max(50).default(10).describe("Maximum results"),
+  },
+  async ({ query, limit }) => {
+    try {
+      const result = await github.searchIssues(query, limit);
+      if (result.issues.length === 0) {
+        return { content: [{ type: "text", text: `No issues found for: "${query}"` }] };
+      }
+      const formatted = result.issues.map((issue: any) => {
+        const repoHint = issue.html_url
+          .replace("https://github.com/", "")
+          .replace(/\/issues\/\d+/, "");
+        return `#${issue.number} (${repoHint}): ${issue.title}\n  ${issue.state} | ${issue.html_url}`;
+      }).join("\n\n");
+      return {
+        content: [{ type: "text", text: `## Results (${result.total_count} total)\n\n${formatted}` }],
       };
     } catch (error) {
       return {
@@ -515,39 +336,67 @@ server.tool(
   },
 );
 
-// Helper: Parse GitHub's Link header
-function parseLinkHeader(link: string | null): { first?: string; prev?: string; next?: string; last?: string } {
-  if (!link) return {};
-  const result: Record<string, string> = {};
-  const parts = link.split(", ");
-  for (const part of parts) {
-    const match = part.match(/<([^>]+)>;\s*rel="([^"]+)"/);
-    if (match) {
-      result[match[2]] = match[1];
-    }
-  }
-  return result;
-}
-```
-
-### Step 9: Batch labeling tool
-
-```typescript
-// ============================================================
-// Advanced Tool: Add labels to multiple issues at once
-// ============================================================
+// Tool 6 — NEW: Paginated issue listing
 server.tool(
-  "batch_label_issues",
-  "Add labels to multiple issues at once (useful for triage sprints)",
+  "list_issues_paginated",
+  "Browse issues with full pagination — essential for large repositories with hundreds of issues",
   {
     owner: z.string().describe("Repository owner"),
     repo: z.string().describe("Repository name"),
-    issue_numbers: z.array(z.number().int().positive()).min(1).max(25).describe("Issue numbers to label"),
-    labels: z.array(z.string()).min(1).max(10).describe("Labels to apply"),
+    state: z.enum(["open", "closed", "all"]).default("open"),
+    page: z.number().int().min(1).default(1).describe("Page number (starts at 1)"),
+    per_page: z.number().int().min(1).max(100).default(30).describe("Items per page (max 100)"),
+    sort: z.enum(["created", "updated", "comments"]).default("updated").describe("Sort field"),
+    direction: z.enum(["asc", "desc"]).default("desc").describe("Sort direction"),
+  },
+  async ({ owner, repo, state, page, per_page, sort, direction }) => {
+    try {
+      const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues?` +
+        new URLSearchParams({ state, page: String(page), per_page: String(per_page), sort, direction });
+
+      const response = await githubFetch(url);
+      if (!response.ok) throw new Error(`GitHub API: ${response.status} ${response.statusText}`);
+
+      const issues: any[] = await response.json() as any[];
+      const pagination = parseLinkHeader(response.headers.get("link"));
+
+      if (issues.length === 0) {
+        return { content: [{ type: "text", text: `No issues on page ${page} of ${owner}/${repo}.` }] };
+      }
+
+      const formatted = issues.map((issue: any) => {
+        const labels = issue.labels.map((l: any) => `[${l.name}]`).join(" ");
+        return `#${issue.number}: ${issue.title}\n  ${issue.state} | 💬 ${issue.comments}\n  ${issue.html_url}`;
+      }).join("\n\n");
+
+      let header = `## Issues in ${owner}/${repo} (page ${page})`;
+      if (pagination.last) {
+        const lastPage = parseInt(new URL(pagination.last).searchParams.get("page") || "1", 10);
+        header += `\n📄 Page ${page} of ${lastPage}`;
+      }
+      if (pagination.next) header += `\n➡️ Next page available`;
+
+      return { content: [{ type: "text", text: `${header}\n\n${formatted}` }] };
+    } catch (error) {
+      return { content: [{ type: "text", text: `Error: ${error}` }], isError: true };
+    }
+  },
+);
+
+// Tool 7 — NEW: Batch label multiple issues
+server.tool(
+  "batch_label_issues",
+  "Apply labels to multiple issues at once — extremely useful during triage sessions",
+  {
+    owner: z.string().describe("Repository owner"),
+    repo: z.string().describe("Repository name"),
+    issue_numbers: z.array(z.number().int().positive()).min(1).max(25).describe("Issue numbers to label (max 25)"),
+    labels: z.array(z.string()).min(1).max(10).describe("Labels to apply (max 10)"),
   },
   async ({ owner, repo, issue_numbers, labels }) => {
     const results: { number: number; success: boolean; error?: string }[] = [];
-    
+
+    // Process sequentially to avoid GitHub rate limiting
     for (const issueNumber of issue_numbers) {
       try {
         await github.updateIssue(owner, repo, issueNumber, { labels });
@@ -569,83 +418,283 @@ server.tool(
           `Labels applied: ${labels.join(", ")}`,
           `✅ Succeeded: ${successCount}/${issue_numbers.length}`,
           failCount > 0 ? `❌ Failed: ${failCount}/${issue_numbers.length}` : "",
-          failCount > 0 ? `\n### Failures:\n${results.filter(r => !r.success).map(r => `- #${r.number}: ${r.error}`).join("\n")}` : "",
+          failCount > 0
+            ? `\n### Failures:\n${results.filter(r => !r.success).map(r => `- #${r.number}: ${r.error}`).join("\n")}`
+            : "",
         ].join("\n"),
       }],
     };
   },
 );
+
+// ════════════════════════════════════════════════════════════
+// ──── RESOURCES ────
+// ════════════════════════════════════════════════════════════
+
+// Resource 1 — Single issue as markdown
+server.resource(
+  "issue-detail",
+  new ResourceTemplate("issue://{owner}/{repo}/{number}", { list: undefined }),
+  async (uri, { owner, repo, number }) => {
+    try {
+      const issue = await github.getIssue(
+        owner as string,
+        repo as string,
+        parseInt(number as string, 10)
+      );
+      const labels = issue.labels.map((l: any) => `\`${l.name}\``).join(" ");
+      const assignees = issue.assignees.map((a: any) => `@${a.login}`).join(", ");
+
+      const markdown = [
+        `# ${issue.title}`,
+        `**Status:** ${issue.state === "open" ? "🟢 Open" : "🔴 Closed"}`,
+        `**Author:** @${issue.user.login} | **Labels:** ${labels || "*none*"}`,
+        `**URL:** ${issue.html_url}`,
+        `---`,
+        issue.body || "*No description*",
+      ].join("\n");
+
+      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: markdown }] };
+    } catch (error) {
+      throw new Error(`Failed to fetch issue: ${error}`);
+    }
+  },
+);
+
+// Resource 2 — Issue comments as threaded conversation
+server.resource(
+  "issue-comments",
+  new ResourceTemplate("issue://{owner}/{repo}/{number}/comments", { list: undefined }),
+  async (uri, { owner, repo, number }) => {
+    try {
+      const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues/${number}/comments`;
+      const response = await githubFetch(url);
+      if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
+
+      const comments: any[] = await response.json() as any[];
+      if (comments.length === 0) {
+        return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `*No comments yet.*` }] };
+      }
+
+      const formatted = comments.map((c: any) => {
+        const date = new Date(c.created_at).toLocaleDateString();
+        return `---\n**@${c.user.login}** on ${date}\n\n${c.body || "*No text*"}`;
+      }).join("\n\n");
+
+      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `# Comments for #${number}\n\n${formatted}` }] };
+    } catch (error) {
+      throw new Error(`Failed to fetch comments: ${error}`);
+    }
+  },
+);
+
+// Resource 3 — Open issues listing
+server.resource(
+  "open-issues",
+  new ResourceTemplate("issue://{owner}/{repo}/open", { list: undefined }),
+  async (uri, { owner, repo }) => {
+    try {
+      const issues = await github.listIssues(owner as string, repo as string, "open");
+      if (issues.length === 0) {
+        return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `✨ No open issues!` }] };
+      }
+      const list = issues.map((issue: any) => {
+        return `- [#${issue.number}](${issue.html_url}): ${issue.title}`;
+      }).join("\n");
+      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: `# Open Issues (${issues.length})\n\n${list}` }] };
+    } catch (error) {
+      throw new Error(`Failed to list issues: ${error}`);
+    }
+  },
+);
+
+// ════════════════════════════════════════════════════════════
+// ──── PROMPTS ────
+// ════════════════════════════════════════════════════════════
+
+// Prompt 1 — Triage workflow
+server.prompt(
+  "triage-issue",
+  "Template for triaging a new GitHub issue: analyze severity, suggest labels, propose next steps",
+  {
+    owner: z.string().describe("Repository owner"),
+    repo: z.string().describe("Repository name"),
+    issue_number: z.number().int().positive().describe("Issue number to triage"),
+  },
+  ({ owner, repo, issue_number }) => ({
+    messages: [{
+      role: "user",
+      content: {
+        type: "text",
+        text: [
+          `Please triage issue #${issue_number} in ${owner}/${repo}.`,
+          `Use get_issue tool. Analyze:`,
+          `1. Severity — Bug, feature, or question?`,
+          `2. Labels — What fits?`,
+          `3. Priority — Now, sprint, or backlog?`,
+          `4. Assignee — Who should look?`,
+          `5. Next steps — What's missing?`,
+        ].join("\n"),
+      },
+    }],
+  }),
+);
+
+// Prompt 2 — Weekly summary
+server.prompt(
+  "weekly-summary",
+  "Generate a weekly summary of issue activity for a repository",
+  {
+    owner: z.string().describe("Repository owner"),
+    repo: z.string().describe("Repository name"),
+  },
+  ({ owner, repo }) => ({
+    messages: [{
+      role: "user",
+      content: {
+        type: "text",
+        text: [
+          `Weekly summary for ${owner}/${repo}.`,
+          `1. List open issues`,
+          `2. Group: 🔥 New | 📝 Updated | 🧊 Stale (30d+)`,
+          `3. Include number, title, labels, last update`,
+          `4. Count summary at top`,
+        ].join("\n"),
+      },
+    }],
+  }),
+);
+
+// Prompt 3 — Bug report template
+server.prompt(
+  "bug-report-template",
+  "Pre-formatted bug report template for filing an issue",
+  {},
+  () => ({
+    messages: [{
+      role: "user",
+      content: {
+        type: "text",
+        text: [
+          `Use this template to file a bug report:`,
+          `## Bug Report`,
+          `### Describe the Bug`,
+          `### To Reproduce`,
+          `### Expected Behavior`,
+          `### Environment`,
+        ].join("\n"),
+      },
+    }],
+  }),
+);
+
+// ════════════════════════════════════════════════════════════
+// ──── START THE SERVER ────
+// ════════════════════════════════════════════════════════════
+
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error("✅ github-issue-manager running on stdio");
+  console.error("   Capabilities: 7 tools · 3 resources · 3 prompts");
+}
+
+main().catch((error) => {
+  console.error("❌ Fatal error:", error);
+  process.exit(1);
+});
 ```
 
 ---
 
-## Part 4: Testing All Three Capabilities
-
-### Test with MCP Inspector
+## Step 3: Build & Test
 
 ```bash
 npm run build
+export GITHUB_TOKEN="ghp_your_token_here"
 npx @modelcontextprotocol/inspector node build/index.js
 ```
 
-Check the three tabs in the Inspector UI:
+Open Inspector. Three tabs:
 
-| Tab | Action | Expected |
-|-----|--------|----------|
-| **Tools** | Call any of the 7 tools | Works as before |
-| **Resources** | Read resource URIs | Returns markdown content |
-| **Prompts** | Select a prompt, fill params | Returns rendered template |
+**🛠 Tools Tab** — All 7 tools listed. Test each with params.
 
-### Test with Claude Desktop
+**📄 Resources Tab** — Read each URI template:
+- `issue://myuser/myrepo/1` → markdown with issue details
+- `issue://myuser/myrepo/1/comments` → threaded conversation
+- `issue://myuser/myrepo/open` → open issues overview
 
-Make sure `claude_desktop_config.json` is still pointing at your server. Then try these prompts:
+**💬 Prompts Tab** — Select, fill params, see rendered template.
 
-1. **Resources test:**
-   > "What's the content of resource issue://ptminh-kmp/ptminh-kmp.github.io/1"
+### Test in Claude Desktop
 
-   Claude should be able to access resources automatically. Ask:
-   > "Tell me about the open issues in ptminh-kmp/ptminh-kmp.github.io"
+```json
+{
+  "mcpServers": {
+    "github-issue-manager": {
+      "command": "node",
+      "args": ["/path/to/github-issue-mcp/build/index.js"],
+      "env": { "GITHUB_TOKEN": "ghp_your_token_here" }
+    }
+  }
+}
+```
 
-2. **Prompts test:**
-   In the Claude Desktop chat box, type `/` to see available prompts. Select `weekly-summary`, enter the repo details, and Claude will generate a structured summary.
+Try: *"What are the open issues?"* → uses `open-issues` resource.
 
-3. **Advanced tools test:**
-   > "Add the label 'bug' to issues 1, 2, and 3 in ptminh-kmp/ptminh-kmp.github.io"
-
----
-
-## The Complete Server Now
-
-After Day 2, your MCP server exposes:
-
-| Capability | Items |
-|-----------|-------|
-| **Tools** (7) | list_issues, get_issue, create_issue, update_issue, search_issues, list_issues_paginated, batch_label_issues |
-| **Resources** (3) | issue-detail, issue-comments, open-issues |
-| **Prompts** (3) | triage-issue, weekly-summary, bug-report-template |
-
-This is now a **complete MCP server** supporting all three spec capabilities.
+Try: Type `/` → select `weekly-summary` → structured report.
 
 ---
 
-## What You Learned Today
+## Deep Dive: How Resources & Prompts Work
 
-| Concept | In Practice |
-|---------|-------------|
-| Resources | URI templates → `issue://{owner}/{repo}/{number}` |
-| MIME types | `text/markdown` for readable content |
-| Prompts | Templates with Zod params → LLM instructions |
-| Template rendering | Parameter interpolation → context-rich user messages |
-| Advanced tools | Pagination with Link headers, batch operations |
-| Three-capability server | Tools + Resources + Prompts working together |
+### Resources Flow
+
+```
+LLM: "Tell me about issue #42"
+  → Host calls resources/read("issue://myuser/myrepo/42")
+  → Server returns markdown
+  → LLM reads it as context
+```
+
+Key: Resources are **read-only data** the LLM browses like a filesystem. Tools are **actions** the LLM takes.
+
+### Prompts Flow
+
+```
+User opens prompt menu → selects "triage-issue"
+  → Form appears (owner, repo, issue_number)
+  → User fills values → Server renders template
+  → LLM receives rendered text as first message
+  → LLM calls get_issue, analyzes, returns structured triage
+```
+
+Key: Prompts are **scaffolding** that ensures correct workflow.
+
+---
+
+## Server Capabilities After Day 2
+
+```
+📁 github-issue-manager v1.0.1
+├── 🛠 Tools (7): list, get, create, update, search, paginated, batch
+├── 📄 Resources (3): issue-detail, comments, open-issues
+└── 💬 Prompts (3): triage, weekly-summary, bug-report-template
+```
+
+| Capability | Count | Purpose |
+|-----------|-------|---------|
+| Tools | 7 | Actions — read/write GitHub issues |
+| Resources | 3 | Read-only data as markdown |
+| Prompts | 3 | Scaffolded workflows |
 
 ---
 
 ## Prepare for Day 3
 
-Right now our server only works on localhost via stdio. That's fine for development, but real MCP servers need to run remotely.
+Right now: stdio transport, localhost only.
 
-**Tomorrow:** We'll add **SSE (Server-Sent Events) transport**, deploy with Docker, and handle the connection lifecycle properly. Your server will be accessible from any machine.
+**Day 3:** **SSE transport** + Docker. Your server accessible from any machine.
 
 ---
 
@@ -659,4 +708,4 @@ Right now our server only works on localhost via stdio. That's fine for developm
 
 ---
 
-*Series: Building an MCP Server from Scratch. Day 2: Resources, prompts, advanced tools with pagination and batch operations.*
+*Series: Building an MCP Server from Scratch. Day 2: Resources, prompts, and advanced tools with pagination and batch operations.*
