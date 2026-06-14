@@ -352,11 +352,12 @@ curl http://localhost:3001/cache/stats
 
 | Data type | Layer | TTL | Cost saved |
 |-----------|-------|-----|------------|
-| LLM response | Semantic | 5 min | Token cost × 3-5x |
+| LLM response "what issues are open?" | Semantic | 5 min | Token cost × 3-5x |
 | Tool result (read) | Exact | 1 min | API rate limit |
 | Tool result (list) | Exact | 30s | API calls |
-| Mutation | None | — | — |
+| Mutation | None (0 TTL) | — | — |
 | Embedding | Semantic | 30 min | Embedding API cost |
+| System prompt | Manual prefetch | Session | Token cost daily |
 
 ---
 
