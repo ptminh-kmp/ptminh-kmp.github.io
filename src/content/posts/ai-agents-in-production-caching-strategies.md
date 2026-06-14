@@ -685,9 +685,11 @@ export class CacheOrchestrator {
     if (tool === "create_issue" || tool === "update_issue") {
       await this.exact.clear("tool:list_issues:*");
       await this.exact.clear("tool:search_issues:*");
+      await this.exact.clear("tool:get_issue:*");
 
-      // Semantic: clear recent entries
-      await this.semantic.clear("*");
+      // Semantic: only invalidate entries containing affected repo
+      const repoHint = params.repo ? `*${params.repo}*` : "*";
+      await this.semantic.clear(repoHint);
     }
   }
 
@@ -792,9 +794,9 @@ app.get("/cache/stats", async (req, res) => {
     hitRate: `${hitRate}%`,
     layers: stats,
     estimatedSavings: {
-      exact: `$${(stats.exact.hits * 0.002).toFixed(2)}`, // ~$0.002 saved per hit
-      semantic: `$${(stats.semantic.hits * 0.002).toFixed(2)}`,
-      tool: `$${(stats.tool.hits * 0.002).toFixed(2)}`,
+      exact: `$${(stats.exact.hits * 0.001).toFixed(3)}`, // ~$0.001 saved per exact hit
+      semantic: `$${(stats.semantic.hits * 0.005).toFixed(2)}`,
+      tool: `$${(stats.tool.hits * 0.003).toFixed(2)}`,
     },
   });
 });
