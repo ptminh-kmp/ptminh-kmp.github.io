@@ -26,7 +26,7 @@
     "@keystatic/astro": "^5.0.0",
     "@keystatic/core": "^0.5.0",
     "@astrojs/tailwind": "^6.0.2",
-    "@expressive-code/core": "^0.41.3",
+    "@expressive-code/core": "^0.42.0",
     "@expressive-code/plugin-collapsible-sections": "^0.41.3",
     "@expressive-code/plugin-line-numbers": "^0.42.0",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
