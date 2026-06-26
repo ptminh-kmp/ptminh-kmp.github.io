@@ -21,17 +21,81 @@ series:
   total: 6
 ---
 
-You built an MCP server. It works on localhost. Now make it accessible to the internet — and to every agent that needs it.
+## Series Overview
 
-ECS Fargate is the sweet spot for serving MCP servers: no EC2 to manage, auto-scaling out of the box, and a built-in load balancer. You ship a Docker image, Fargate does the rest.
+AI agents are powerful, but running them in production is a different game. You need infrastructure that's reliable, scalable, and secure — and that's where AWS comes in.
 
-This post deploys a GitHub Issue Manager MCP server onto AWS ECS Fargate, with:
+This series teaches you **how to build production-grade infrastructure for AI agents using AWS services**. Each day covers one piece of the puzzle: deploying models, managing state, caching, routing traffic, and automating deployments.
 
-- Application Load Balancer (HTTPS + WebSocket for SSE transport)
-- Auto-scaling based on request count
-- Secrets Manager for GitHub tokens
-- ECR for Docker image storage
-- CI/CD via CodePipeline
+### The Big Picture — What We're Building
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    Production AI Agent Architecture                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐      │
+│  │   Agent  │    │   Agent  │    │   Agent  │    │   Agent  │      │
+│  │  (Team A)│    │  (Team B)│    │  (Team C)│    │  (Team D)│      │
+│  └────┬─────┘    └────┬─────┘    └────┬─────┘    └────┬─────┘      │
+│       │               │               │               │            │
+│       └───────────────┼───────────────┼───────────────┘            │
+│                       │               │                            │
+│              ┌────────▼───────────────▼────────┐                   │
+│              │     Route53 + CloudFront         │  ◄── Day 5       │
+│              │  (Global traffic routing + CDN)  │                   │
+│              └────────┬───────────────┬────────┘                   │
+│                       │               │                            │
+│              ┌────────▼───────────────▼────────┐                   │
+│              │       ALB (Load Balancer)        │  ◄── Day 1       │
+│              └────────┬───────────────┬────────┘                   │
+│                       │               │                            │
+│  ┌────────────────────┼───────────────┼────────────────────┐       │
+│  │         ┌──────────▼───────┐ ┌────▼───────────┐        │       │
+│  │         │  ECS Fargate     │ │  Lambda +      │        │       │
+│  │         │  (Containerized) │ │  Bedrock       │  ◄── Day 1,4  │
+│  │         │  MCP Server      │ │  (Serverless)  │        │       │
+│  │         └──────────┬───────┘ └────┬───────────┘        │       │
+│  │                    │              │                    │       │
+│  │  ┌─────────────────┼──────────────┼────────────────┐   │       │
+│  │  │         ┌───────▼──────┐ ┌────▼────────┐       │   │       │
+│  │  │         │  DynamoDB   │ │  ElastiCache │       │   │       │
+│  │  │         │  (State,    │ │  (Cache,     │       │   │       │
+│  │  │         │  Sessions)  │ │  Bedrock)    │       │   │       │
+│  │  │         └─────────────┘ └─────────────┘       │   │       │
+│  │  └───────────────────────────────────────────────┘   │       │
+│  └──────────────────────────────────────────────────────┘       │
+│                                                                     │
+│  ┌──────────────────────────────────────────────────────────────┐ │
+│  │  CI/CD Pipeline (CodePipeline + CodeBuild)          ◄── Day 6│ │
+│  │  Git push → Build Docker → Push ECR → Deploy ECS             │ │
+│  └──────────────────────────────────────────────────────────────┘ │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Series Roadmap
+
+| Day | Chủ đề | AWS Services | What you learn |
+|-----|--------|-------------|----------------|
+| 1 | **Deploy MCP Server on ECS Fargate** | ECS, ECR, ALB, Secrets Manager | Containerize + deploy your first agent server with HTTPS, secrets, and auto-scaling |
+| 2 | **Agent State with DynamoDB** | DynamoDB Global Tables, DAX | Store conversation history, session state, and handle multi-region replication |
+| 3 | **LLM Caching with ElastiCache + Bedrock** | ElastiCache (Redis), Bedrock | Semantic caching, prompt caching with Bedrock, reduce latency and cost |
+| 4 | **Serverless Agent with Lambda + Bedrock** | Lambda, API Gateway, Bedrock, Step Functions | Build agents without managing servers — Lambda orchestrates Bedrock calls |
+| 5 | **Multi-Region Routing with Route53** | Route53, CloudFront, Global Accelerator | Global traffic routing, failover, latency-based routing for agents |
+| 6 | **CI/CD for AI Agents** | CodePipeline, CodeBuild, ECR, ECS | Automated deployment pipeline — ship agent updates with zero downtime |
+
+Each day builds on the previous one. By day 6, you'll have a complete production infrastructure for any AI agent.
+
+---
+
+## Day 1: Deploy an MCP Server on ECS Fargate
+
+Your MCP server works on localhost. Now make it accessible to the internet — and to every agent that needs it.
+
+ECS Fargate is the sweet spot: no EC2 to manage, auto-scaling out of the box, and a built-in load balancer. You ship a Docker image, Fargate does the rest.
+
+### What we deploy today:
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
@@ -45,6 +109,15 @@ This post deploys a GitHub Issue Manager MCP server onto AWS ECS Fargate, with:
                      │  └────────┘ │     │  └──────────┘ │
                      └──────────────┘     └──────────────┘
 ```
+
+**Step by step:**
+1. Package the MCP server as a Docker container
+2. Push it to ECR (private Docker registry)
+3. Store secrets (GitHub tokens) in AWS Secrets Manager
+4. Create an ECS Fargate cluster and task definition
+5. Set up an ALB with HTTPS to route traffic
+6. Configure auto-scaling
+7. Wire up CI/CD so future deployments are automatic
 
 ---
 

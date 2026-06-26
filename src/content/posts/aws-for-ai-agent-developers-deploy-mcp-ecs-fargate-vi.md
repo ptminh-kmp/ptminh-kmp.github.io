@@ -21,11 +21,78 @@ series:
   total: 6
 ---
 
-Bạn xây MCP server. Nó chạy trên localhost. Giờ đưa lên internet để agent nào cũng gọi được.
+## Tổng quan Series
+
+AI agents rất mạnh, nhưng chạy production là chuyện khác. Cần infrastructure reliable, scalable, secure — và AWS giải quyết được tất cả.
+
+Series này dạy bạn **xây dựng production-grade infrastructure cho AI agents trên AWS**. Mỗi ngày là một piece của puzzle: deploy model, quản lý state, caching, routing traffic, và automate deployment.
+
+### Kiến trúc tổng thể — Chúng ta đang xây cái gì?
+
+```
+                           AI Agent trong Production
+                                    │
+          ┌─────────────────────────┼─────────────────────────┐
+          │                         │                         │
+          ▼                         ▼                         ▼
+    ┌──────────────┐        ┌──────────────┐         ┌──────────────┐
+    │ Route53 +    │        │   ALB        │         │ CI/CD        │
+    │ CloudFront   │        │ (Load Balancer)        │ Pipeline     │
+    │ (Day 5)      │        │ (Day 1)       │         │ (Day 6)      │
+    └──────┬───────┘        └──────┬───────┘         └──────────────┘
+           │                       │
+    ┌──────▼───────────────────────▼──────┐
+    │          Compute Layer              │
+    │  ┌────────────────┬──────────────┐  │
+    │  │ ECS Fargate   │  Lambda +    │  │
+    │  │ (Container)   │  Bedrock     │  │
+    │  │ (Day 1)       │  (Day 4)     │  │
+    │  └───────┬───────┴──────┬───────┘  │
+    └──────────┼──────────────┼──────────┘
+               │              │
+    ┌──────────▼──────────────▼──────────┐
+    │        Data Layer                  │
+    │  ┌──────────────┬──────────────┐   │
+    │  │ DynamoDB     │ ElastiCache  │   │
+    │  │ (State/SS)   │ (Cache/LLM)  │   │
+    │  │ (Day 2)      │ (Day 3)      │   │
+    │  └──────────────┴──────────────┘   │
+    └────────────────────────────────────┘
+```
+
+### Lộ trình 6 ngày
+
+| Day | Chủ đề | AWS Services | Học gì? |
+|-----|--------|-------------|---------|
+| 1 | Deploy MCP Server lên ECS Fargate | ECS, ECR, ALB, Secrets Manager | Containerize + deploy agent server với HTTPS, secrets, auto-scaling |
+| 2 | Agent State với DynamoDB | DynamoDB Global Tables, DAX | Lưu conversation history, session state, replication đa region |
+| 3 | LLM Caching với ElastiCache + Bedrock | ElastiCache (Redis), Bedrock | Semantic + prompt caching, giảm latency và cost |
+| 4 | Serverless Agent với Lambda + Bedrock | Lambda, API Gateway, Bedrock, Step Functions | Build agent không cần server |
+| 5 | Multi-Region Routing với Route53 | Route53, CloudFront, Global Accelerator | Global traffic routing, failover, latency-based |
+| 6 | CI/CD cho AI Agents | CodePipeline, CodeBuild, ECR, ECS | Automated deployment, zero-downtime ship |
+
+---
+
+## Day 1: Deploy MCP Server lên ECS Fargate
+
+Bạn xây MCP server. Nó chạy localhost. Giờ đưa lên internet để agent nào cũng gọi được.
 
 ECS Fargate là sweet spot: không quản lý EC2, auto-scaling sẵn, có load balancer built-in. Ship Docker image, Fargate lo phần còn lại.
 
-Bài này deploy MCP server lên ECS Fargate với ALB (HTTPS), Secrets Manager, auto-scaling, CI/CD.
+### Hôm nay deploy:
+
+```
+Agent ─▶ HTTPS :443 ─▶ ALB ─▶ ECS Fargate ─▶ MCP Server (Docker)
+```
+
+**Các bước:**
+1. Dockerize MCP server
+2. Push lên ECR
+3. Lưu secrets (GitHub token) vào Secrets Manager
+4. Tạo ECS Fargate cluster + task definition
+5. ALB với HTTPS
+6. Auto-scaling
+7. CI/CD tự động
 
 ---
 
