@@ -1,6 +1,6 @@
 ---
 title: "MiniGrid: Sudoku Game"
-description: Are you looking for a game that helps you unwind after a long day while keeping your logical thinking sharp? Welcome to **MiniGrid: Sudoku Game** – the classic puzzle experience, upgraded with a modern, minimalist interface and packed with exciting features!
+description: "Are you looking for a game that helps you unwind after a long day while keeping your logical thinking sharp? Welcome to **MiniGrid: Sudoku Game** – the classic puzzle experience, upgraded with a modern, minimalist interface and packed with exciting features!"
 image: https://rustfs.minixium.com/minixium-blog-bucket/clear-debt-and-fire/app_icon.png
 platform: Mobile App
 type: Mobile

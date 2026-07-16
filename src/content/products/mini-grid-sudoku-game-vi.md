@@ -1,6 +1,6 @@
 ---
 title: "MiniGrid: Sudoku Game"
-description: Bạn đang tìm kiếm một tựa game vừa giúp giải trí sau những giờ làm việc căng thẳng, vừa rèn luyện tư duy logic nhạy bén? Chào mừng bạn đến với **MiniGrid: Sudoku Game** – trải nghiệm giải đố kinh điển được nâng cấp với giao diện hiện đại, tối giản và vô số tính năng hấp dẫn!
+description: "Bạn đang tìm kiếm một tựa game vừa giúp giải trí sau những giờ làm việc căng thẳng, vừa rèn luyện tư duy logic nhạy bén? Chào mừng bạn đến với **MiniGrid: Sudoku Game** – trải nghiệm giải đố kinh điển được nâng cấp với giao diện hiện đại, tối giản và vô số tính năng hấp dẫn!"
 image: https://rustfs.minixium.com/minixium-blog-bucket/clear-debt-and-fire/app_icon.png
 platform: Mobile App
 type: Mobile
