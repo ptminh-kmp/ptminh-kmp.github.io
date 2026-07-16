@@ -17,7 +17,7 @@ tags:
   - game
   - sudoku
   - mobile app
-lang: vi
+lang: en
 draft: false
 ---
 # MiniGrid: Sudoku Game – Sharpen Your Mind, Challenge Yourself Every Day!
