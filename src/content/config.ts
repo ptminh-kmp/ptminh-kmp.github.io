@@ -25,13 +25,17 @@ const postsCollection = defineCollection({
 const productsCollection = defineCollection({
 	schema: z.object({
 		title: z.string(),
+		tagline: z.string().optional().default(""),
 		description: z.string(),
 		image: z.string(),
+		screenshots: z.array(z.string()).optional().default([]),
 		platform: z.string(),
 		type: z.string(),
 		techStack: z.array(z.string()),
 		status: z.string().optional(),
 		demo: z.string().optional(),
+		appStoreUrl: z.string().optional().default(""),
+		playStoreUrl: z.string().optional().default(""),
 		category: z.string().optional(),
 		tags: z.array(z.string()).optional().default([]),
 		draft: z.boolean().optional().default(false),

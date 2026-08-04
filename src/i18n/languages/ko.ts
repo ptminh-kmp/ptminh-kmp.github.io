@@ -35,4 +35,11 @@ export const ko: Translation = {
 	[Key.author]: "저자",
 	[Key.publishedAt]: "게시일",
 	[Key.license]: "라이선스",
+	[Key.product]: "제품",
+
+	[Key.getOnGooglePlay]: "Google Play에서 다운로드",
+	[Key.downloadOnAppStore]: "App Store에서 다운로드",
+	[Key.screenshots]: "스크린샷",
+	[Key.freeDownload]: "무료 다운로드",
+	[Key.comingSoon]: "출시 예정",
 };

@@ -35,4 +35,11 @@ export const zh_CN: Translation = {
 	[Key.author]: "作者",
 	[Key.publishedAt]: "发布于",
 	[Key.license]: "许可协议",
+	[Key.product]: "产品",
+
+	[Key.getOnGooglePlay]: "前往 Google Play 下载",
+	[Key.downloadOnAppStore]: "前往 App Store 下载",
+	[Key.screenshots]: "截图",
+	[Key.freeDownload]: "免费下载",
+	[Key.comingSoon]: "即将推出",
 };

@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
 import MainGridLayout from "../../layouts/MainGridLayout.astro";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
@@ -15,62 +16,98 @@ const lang = Astro.params.lang;
 const products = await getCollection("products", ({ data }) => {
 	return !data.draft && (data.lang === "" || data.lang === lang);
 });
+
+const heroCopy = lang === "vi"
+	? {
+			eyebrow: "Ứng dụng do tôi xây dựng",
+			title: "Sản phẩm",
+			subtitle: "Những ứng dụng mobile tôi tự tay thiết kế, code và phát hành — miễn phí để dùng thử, không cần đăng ký phức tạp.",
+		}
+	: {
+			eyebrow: "Apps I've built",
+			title: "Products",
+			subtitle: "Mobile apps I design, code, and ship myself — free to try, no complicated sign-up.",
+		};
 ---
 
-<MainGridLayout 
-	title={i18n(I18nKey.product, Astro.currentLocale)} 
-	description={i18n(I18nKey.product, Astro.currentLocale)}
+<MainGridLayout
+	title={i18n(I18nKey.product, Astro.currentLocale)}
+	description={heroCopy.subtitle}
 >
 	<div class="w-full">
+		<div class="card-base rounded-[var(--radius-large)] px-6 py-10 md:px-10 md:py-12 mb-8 text-center">
+			<p class="text-sm uppercase tracking-[0.25em] text-[var(--primary)] font-medium mb-3">{heroCopy.eyebrow}</p>
+			<h1 class="text-3xl md:text-4xl font-bold mb-4">{heroCopy.title}</h1>
+			<p class="opacity-75 max-w-2xl mx-auto">{heroCopy.subtitle}</p>
+		</div>
+
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{products.map((product) => (
-				<a 
-					href={`/${lang}/products/${product.slug}`}
-					class="card-base rounded-[var(--radius-large)] overflow-hidden hover:shadow-lg transition-shadow"
-				>
-					{product.data.image && (
-						<div class="w-full overflow-hidden">
-							<img
-								src={product.data.image}
-								alt={product.data.title}
-								class="w-full h-auto hover:scale-105 transition-transform"
-							/>
+				<div class="card-base group rounded-[var(--radius-large)] overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
+					<a href={`/${lang}/products/${product.slug}`} class="flex-1">
+						{product.data.image && (
+							<div class="w-full overflow-hidden">
+								<img
+									src={product.data.image}
+									alt={product.data.title}
+									class="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+								/>
+							</div>
+						)}
+						<div class="p-6 pb-4">
+							<h3 class="text-lg font-bold mb-2 group-hover:text-[var(--primary)] transition-colors">{product.data.title}</h3>
+							<p class="text-sm opacity-75 mb-4 line-clamp-2">{product.data.description}</p>
+							<div class="flex flex-wrap gap-2 mb-2">
+								{product.data.type && (
+									<span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
+										{product.data.type}
+									</span>
+								)}
+								{product.data.platform && (
+									<span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
+										{product.data.platform}
+									</span>
+								)}
+								{product.data.status && (
+									<span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-2 py-1 rounded">
+										{product.data.status}
+									</span>
+								)}
+							</div>
 						</div>
-					)}
-					<div class="p-6">
-						<h3 class="text-lg font-bold mb-2">{product.data.title}</h3>
-						<p class="text-sm opacity-75 mb-4 line-clamp-2">{product.data.description}</p>
-						<div class="flex flex-wrap gap-2 mb-4">
-							{product.data.type && (
-								<span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
-									{product.data.type}
-								</span>
+					</a>
+					{(product.data.appStoreUrl || product.data.playStoreUrl) && (
+						<div class="flex items-center gap-2 px-6 pb-5 pt-1 mt-auto">
+							{product.data.playStoreUrl && (
+								<a
+									href={product.data.playStoreUrl}
+									target="_blank"
+									rel="noreferrer"
+									aria-label="Get it on Google Play"
+									class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-[var(--primary)] hover:text-white transition-colors"
+								>
+									<Icon name="fa6-brands:google-play" class="text-[1rem]" />
+								</a>
 							)}
-							{product.data.platform && (
-								<span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
-									{product.data.platform}
-								</span>
+							{product.data.appStoreUrl && (
+								<a
+									href={product.data.appStoreUrl}
+									target="_blank"
+									rel="noreferrer"
+									aria-label="Download on the App Store"
+									class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-[var(--primary)] hover:text-white transition-colors"
+								>
+									<Icon name="fa6-brands:app-store-ios" class="text-[1.1rem]" />
+								</a>
 							)}
-							{product.data.status && (
-								<span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-2 py-1 rounded">
-									{product.data.status}
-								</span>
-							)}
-						</div>
-						<div class="flex justify-between items-center">
 							{product.data.category && (
-								<span class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+								<span class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded ml-auto">
 									{product.data.category}
 								</span>
 							)}
-							{product.data.demo && (
-								<span class="text-xs font-medium text-blue-500">
-									Demo available
-								</span>
-							)}
 						</div>
-					</div>
-				</a>
+					)}
+				</div>
 			))}
 		</div>
 	</div>

@@ -35,4 +35,11 @@ export const ja: Translation = {
 	[Key.author]: "作者",
 	[Key.publishedAt]: "公開日",
 	[Key.license]: "ライセンス",
+	[Key.product]: "プロダクト",
+
+	[Key.getOnGooglePlay]: "Google Playで手に入れよう",
+	[Key.downloadOnAppStore]: "App Storeでダウンロード",
+	[Key.screenshots]: "スクリーンショット",
+	[Key.freeDownload]: "無料ダウンロード",
+	[Key.comingSoon]: "近日公開",
 };

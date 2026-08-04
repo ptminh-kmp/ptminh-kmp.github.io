@@ -35,4 +35,11 @@ export const th: Translation = {
 	[Key.author]: "ผู้เขียน",
 	[Key.publishedAt]: "เผยแพร่เมื่อ",
 	[Key.license]: "สัญญาอนุญาต",
+	[Key.product]: "ผลิตภัณฑ์",
+
+	[Key.getOnGooglePlay]: "ดาวน์โหลดบน Google Play",
+	[Key.downloadOnAppStore]: "ดาวน์โหลดบน App Store",
+	[Key.screenshots]: "ภาพหน้าจอ",
+	[Key.freeDownload]: "ดาวน์โหลดฟรี",
+	[Key.comingSoon]: "เร็วๆ นี้",
 };

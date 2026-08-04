@@ -35,4 +35,11 @@ export const zh_TW: Translation = {
 	[Key.author]: "作者",
 	[Key.publishedAt]: "發佈於",
 	[Key.license]: "許可協議",
+	[Key.product]: "產品",
+
+	[Key.getOnGooglePlay]: "在 Google Play 上取得",
+	[Key.downloadOnAppStore]: "在 App Store 下載",
+	[Key.screenshots]: "截圖",
+	[Key.freeDownload]: "免費下載",
+	[Key.comingSoon]: "即將推出",
 };

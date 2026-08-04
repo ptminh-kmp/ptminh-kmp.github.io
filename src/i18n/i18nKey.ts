@@ -33,6 +33,12 @@ enum I18nKey {
 	publishedAt = "publishedAt",
 	license = "license",
 	product = "product",
+
+	getOnGooglePlay = "getOnGooglePlay",
+	downloadOnAppStore = "downloadOnAppStore",
+	screenshots = "screenshots",
+	freeDownload = "freeDownload",
+	comingSoon = "comingSoon",
 }
 
 export default I18nKey;

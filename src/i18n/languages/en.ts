@@ -36,4 +36,10 @@ export const en: Translation = {
 	[Key.publishedAt]: "Published at",
 	[Key.license]: "License",
 	[Key.product]: "Product",
+
+	[Key.getOnGooglePlay]: "Get it on Google Play",
+	[Key.downloadOnAppStore]: "Download on the App Store",
+	[Key.screenshots]: "Screenshots",
+	[Key.freeDownload]: "Free download",
+	[Key.comingSoon]: "Coming soon",
 };

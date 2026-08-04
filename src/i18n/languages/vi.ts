@@ -36,4 +36,10 @@ export const vi: Translation = {
 	[Key.author]: "Tác giả",
 	[Key.publishedAt]: "Đăng vào lúc",
 	[Key.license]: "Giấy phép bản quyền",
+
+	[Key.getOnGooglePlay]: "Tải trên Google Play",
+	[Key.downloadOnAppStore]: "Tải trên App Store",
+	[Key.screenshots]: "Ảnh chụp màn hình",
+	[Key.freeDownload]: "Miễn phí tải về",
+	[Key.comingSoon]: "Sắp ra mắt",
 };

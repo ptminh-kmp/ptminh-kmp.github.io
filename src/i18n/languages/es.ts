@@ -35,4 +35,11 @@ export const es: Translation = {
 	[Key.author]: "Autor",
 	[Key.publishedAt]: "Publicado el",
 	[Key.license]: "Licencia",
+	[Key.product]: "Producto",
+
+	[Key.getOnGooglePlay]: "Consíguelo en Google Play",
+	[Key.downloadOnAppStore]: "Descargar en App Store",
+	[Key.screenshots]: "Capturas de pantalla",
+	[Key.freeDownload]: "Descarga gratuita",
+	[Key.comingSoon]: "Próximamente",
 };
