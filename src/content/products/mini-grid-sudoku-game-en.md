@@ -1,55 +1,103 @@
 ---
 title: "MiniGrid: Sudoku Game"
-description: "Are you looking for a game that helps you unwind after a long day while keeping your logical thinking sharp? Welcome to **MiniGrid: Sudoku Game** – the classic puzzle experience, upgraded with a modern, minimalist interface and packed with exciting features!"
-image: https://rustfs.minixium.com/minixium-blog-bucket/clear-debt-and-fire/app_icon.png
-platform: Mobile App
-type: Mobile
+tagline: "Bite-sized Sudoku — from a 4×4 warm-up to the full 9×9 classic."
+description: "A modern, minimalist Sudoku game with 4×4, 6×6, and 9×9 grids, a difficulty rating you can actually trust, daily challenges with streaks, and global leaderboards — all playable offline, no account required."
+image: "/images/mini-sudoku/icon.png"
+platform: "iOS, Android"
+type: "Mobile Game"
 techStack:
-  - flutter
-  - Isar
-  - Google Admob
-status: Active
-demo: ''
-category: Mobile App
+  - Flutter
+  - Riverpod
+  - Hive
+  - Firebase Auth
+  - Cloud Firestore
+  - Firebase Remote Config
+  - Google AdMob
+status: "iOS (Android Coming Soon)"
+demo: ""
+appStoreUrl: "https://apps.apple.com/us/app/minigrid-sudoku-game/id6791644807"
+playStoreUrl: ""
+category: "Games"
 tags:
+  - sudoku
+  - puzzle
   - flutter
   - indie dev
-  - game
-  - sudoku
-  - mobile app
+  - mobile game
+  - brain training
+  - offline game
 lang: en
 draft: false
 ---
-# MiniGrid: Sudoku Game – Sharpen Your Mind, Challenge Yourself Every Day!
 
-Are you looking for a game that helps you unwind after a long day while keeping your logical thinking sharp? Welcome to **MiniGrid: Sudoku Game** – the classic puzzle experience, upgraded with a modern, minimalist interface and packed with exciting features!
+Most Sudoku apps assume you're sitting down for fifteen minutes. I usually don't have fifteen minutes — I have the length of a coffee break, or the line at the pharmacy. What I wanted was a Sudoku that could stretch to fill either.
 
-### 🌟 Why Choose MiniGrid: Sudoku Game?
+So instead of building yet another 9×9-only app, I built one where the grid size is the difficulty knob: a 4×4 you can clear in under a minute, a 6×6 for a proper coffee break, and the full 9×9 for when you actually have time to sit with it.
 
-**1. Pure, Yet Modern Sudoku Experience**
-MiniGrid delivers the traditional Sudoku gameplay you know and love, but wrapped in a sleek, intuitive, and distraction-free design. Whether you are a beginner just getting started with numbers or a seasoned Sudoku master, there are always difficulty levels perfectly suited to test your limits.
+That became **MiniGrid: Sudoku Game**.
 
-**2. Compete on Global Leaderboards**
-Don't just play alone—now you can compete with friends and thousands of players worldwide!
-* Complete levels with your **Best Time**.
-* Play carefully to minimize **Mistakes**.
-* Collect prestigious **Stars** to secure your spot on the public **Leaderboards**!
+---
 
-**3. Flexible Sign-in & Cloud Sync**
-Easily sign in with your Google account to sync your progress across multiple devices. Prefer to stay off the radar? The "Guest Sign-in" feature allows you to create an anonymous profile and climb the ranks without sharing your email. 
+## What MiniGrid Actually Does
 
-**4. Personalize Your Gameplay**
-We know every player has their own style, which is why MiniGrid lets you customize your experience:
-* **Themes:** Choose an eye-friendly dark mode, a clean light mode, or a style that fits your mood.
-* **Sound & Vibration:** Toggle haptic feedback and sound effects for a fully immersive puzzle-solving experience.
+Pick a grid size — 4×4, 6×6, or 9×9 — and each one has its own numbered track of levels to work through, from easy to expert. Every level you clear earns up to **3 stars**, based on how clean the run was: zero mistakes and zero hints gets you all three.
 
-**5. Play Anywhere, Anytime - Total Privacy**
-Your unfinished puzzle progress is always saved safely right on your device (Local-only data). You can close the app and pick up exactly where you left off later. When you do choose to go online, your account data is securely backed by industry-standard Google Firebase infrastructure.
+Tap a cell, tap a number. Undo and redo step you back and forward through your moves, a notes mode lets you jot small candidate numbers in a cell instead of committing, and erase clears a cell you've talked yourself out of.
 
-### 🎯 Download MiniGrid: Sudoku Game Today!
+## A Difficulty Rating You Can Trust
 
-Don't let your brain fall asleep. Keep your mind razor-sharp, boost your concentration, and experience the satisfying rush of filling in that final number. 
+Here's the thing that bugged me about most puzzle generators: they rate difficulty by counting how many cells are blank. That's a terrible proxy — a puzzle with 40 empty cells can be trivial, and one with 30 can require genuine guesswork.
 
-👉 **Discover it now at:** [Insert App Store / Google Play link or your Website URL here]
+MiniGrid rates difficulty by actually solving the puzzle the way a human would, tracking which techniques were needed:
 
-*MiniGrid: Sudoku Game – Simple, Elegant, and Challenging!*
+| Difficulty | Technique required |
+| --- | --- |
+| **Easy** | Naked Single, Hidden Single |
+| **Medium** | + Locked Candidate (pointing pairs) |
+| **Hard** | + Naked Pair |
+| **Expert** | None of the above suffice — real deduction required |
+
+If the solver has to fall back to guessing, the puzzle doesn't ship as Easy just because it happens to have a lot of clues. The label on the level actually means something.
+
+## Hints, Mistakes, and the Occasional Rewarded Ad
+
+You get 5 mistakes per level before it's over — shown as hearts, so you always know exactly how much room you have left. You also get 3 free hints per level if you're genuinely stuck; watch a short ad for a bonus hint, or to revive a level you just lost, and keep going without starting over.
+
+None of it is required. Notes, undo, and the difficulty ladder are usually enough to get you unstuck without spending a single hint.
+
+## Daily Challenge & Streaks
+
+Every calendar day, everyone gets the same puzzle — deterministically assigned, so there's no server curating a fresh one and no risk of it changing on you mid-game. Clear it and your streak grows; miss a day and, if you want, a rewarded ad lets you go back and catch up on yesterday's before the streak breaks.
+
+Each day's challenge has its own leaderboard, separate from the regular level boards, so you're racing the same puzzle as everyone else who played today.
+
+## Compete, or Don't
+
+You never need an account to play. Progress is saved locally on your device the moment you make a move, so you can close the app mid-puzzle and pick up exactly where you left off — no login screen in the way.
+
+Signing in only matters if you want your time to show up on a leaderboard. You can sign in with **Google** or **Sign in with Apple**, or stay anonymous with a guest profile and still climb the ranks under a name nobody can trace back to you. Start anonymous and decide to link a Google or Apple account later — your existing scores carry over, nothing is lost.
+
+## Where Your Data Lives
+
+| | Detail |
+| --- | --- |
+| **Puzzle progress** | Local only, via Hive — never leaves your device |
+| **Leaderboard & account** | Firebase Auth + Firestore — only created if you choose to sign in |
+| **Sign-in options** | Google, Sign in with Apple, or anonymous guest |
+| **Ads** | Standard Google AdMob, used only for optional hint/revive rewards |
+
+## Built For Quick, Everyday Play
+
+Light, dark, or system theme. Sound and haptic feedback you can toggle independently. The interface follows your device language automatically — English, Vietnamese, Spanish, German, and Portuguese are all built in, with more planned.
+
+## Why I Built It This Way
+
+The grid-size range exists because "sit down and solve a puzzle" and "I have ninety seconds" are both real ways people want to play, and most apps only serve one of them. The difficulty rater exists because a level labeled "Easy" that secretly requires guessing is a broken promise to the player. And everything works offline by default because a logic puzzle shouldn't require a network request to open.
+
+---
+
+## Try It
+
+MiniGrid is now available on the App Store (Android version coming soon). No account needed to play — just download the app and start filling in a grid.
+
+Have a bug to report or a feature you'd like to see once it's out? My contact details are in the app's settings screen the day it ships. I read everything.
