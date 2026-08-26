@@ -5,7 +5,7 @@ customSlug: privacy-policy
 lang: vi
 description: Privacy policy for Knotweave app
 published: 2026-08-25
-updated: 2026-08-25T00:00:00
+updated: 2026-08-27T00:00:00
 category: ''
 tags:
   - privacy
@@ -13,7 +13,7 @@ tags:
 image: ''
 draft: false
 ---
-**Ngày hiệu lực:** 25 tháng 8 năm 2026
+**Ngày hiệu lực:** 27 tháng 8 năm 2026
 
 **Tổng quan**
 Knotweave ("ứng dụng") là trò chơi giải đố nối các ô đánh số theo thứ tự để lấp đầy bảng lưới. Chính sách này giải thích những dữ liệu nào chúng tôi thu thập, lý do thu thập và cách bạn có thể kiểm soát hoặc xóa dữ liệu đó.
@@ -45,7 +45,7 @@ Dữ liệu tài khoản và bảng xếp hạng được giữ cho đến khi b
 Knotweave là trò chơi giải đố dành cho đối tượng phổ thông và không nhắm mục tiêu đến trẻ em dưới 13 tuổi. Nếu bạn là cha mẹ hoặc người giám hộ và tin rằng con bạn đã cung cấp cho chúng tôi dữ liệu cá nhân, vui lòng liên hệ với chúng tôi theo thông tin bên dưới và chúng tôi sẽ xóa dữ liệu đó.
 
 **Lựa chọn của bạn**
-Bạn có thể chơi mà không cần đăng nhập; việc đăng nhập chỉ được yêu cầu để xuất hiện trên bảng xếp hạng. Bạn có thể đăng xuất hoặc xóa tài khoản của mình bất cứ lúc nào từ Cài đặt hoặc Hồ sơ. Bạn có thể tắt thông báo nhắc nhở hàng ngày bất cứ lúc nào từ cài đặt thông báo của thiết bị. Trên iOS, bạn có thể thay đổi quyền theo dõi quảng cáo của mình bất cứ lúc nào trong Cài đặt → Quyền riêng tư & Bảo mật → Theo dõi.
+Bạn có thể chơi mà không cần đăng nhập; việc đăng nhập chỉ được yêu cầu để xuất hiện trên bảng xếp hạng. Bạn có thể đăng xuất hoặc xóa tài khoản của mình bất cứ lúc nào từ Cài đặt hoặc Hồ sơ. Bạn có thể tắt thông báo nhắc nhở hàng ngày bất cứ lúc nào từ cài đặt thông báo của thiết bị. Trên iOS, bạn có thể thay đổi quyền theo dõi quảng cáo của mình bất cứ lúc nào trong Cài đặt → Quyền riêng tư & Bảo mật → Theo dõi. Trên Android, bạn có thể tắt quảng cáo cá nhân hóa hoặc đặt lại mã quảng cáo bất cứ lúc nào trong Cài đặt → Google → Quảng cáo.
 
 **Thay đổi đối với chính sách này**
 Chúng tôi có thể cập nhật chính sách này theo thời gian. Những thay đổi quan trọng sẽ được phản ánh bằng cách cập nhật ngày hiệu lực ở trên.

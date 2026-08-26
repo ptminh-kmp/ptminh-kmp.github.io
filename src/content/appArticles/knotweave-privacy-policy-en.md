@@ -5,7 +5,7 @@ customSlug: privacy-policy
 lang: en
 description: Privacy policy for Knotweave app
 published: 2026-08-25
-updated: 2026-08-25T00:00:00
+updated: 2026-08-27T00:00:00
 category: ''
 tags:
   - privacy
@@ -13,7 +13,7 @@ tags:
 image: ''
 draft: false
 ---
-**Effective date:** August 25, 2026
+**Effective date:** August 27, 2026
 
 **Overview**
 Knotweave ("the app") is a puzzle game where you connect numbered cells in sequence to fill the grid. This policy explains what data we collect, why, and how you can control or delete it.
@@ -45,7 +45,7 @@ Leaderboard and account data is kept until you delete it. You can permanently de
 Knotweave is a general-audience puzzle game and is not directed at children under 13. If you are a parent or guardian and believe your child has provided us with personal data, please contact us below and we will delete it.
 
 **Your choices**
-You can play without signing in at all; sign-in is only required to appear on leaderboards. You can sign out or delete your account at any time from Settings or Profile. You can turn off daily reminder notifications at any time from your device's notification settings. On iOS, you can change your ad tracking permission at any time in Settings → Privacy & Security → Tracking.
+You can play without signing in at all; sign-in is only required to appear on leaderboards. You can sign out or delete your account at any time from Settings or Profile. You can turn off daily reminder notifications at any time from your device's notification settings. On iOS, you can change your ad tracking permission at any time in Settings → Privacy & Security → Tracking. On Android, you can opt out of personalized ads or reset your advertising ID at any time in Settings → Google → Ads.
 
 **Changes to this policy**
 We may update this policy from time to time. Material changes will be reflected by updating the effective date above.

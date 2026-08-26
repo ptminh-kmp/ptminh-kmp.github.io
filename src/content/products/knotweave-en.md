@@ -22,10 +22,10 @@ techStack:
   - Supabase
   - Google AdMob
   - Google Sign-In
-status: "Launching Soon"
+status: "Android (iOS Coming Soon)"
 demo: ""
 appStoreUrl: "https://apps.apple.com/app/id6752108828"
-playStoreUrl: ""
+playStoreUrl: "https://play.google.com/store/apps/details?id=com.minixium.zip_game"
 category: "Games"
 tags:
   - puzzle
@@ -77,6 +77,6 @@ Most puzzle games that call themselves "numberlink" let you win the moment the n
 
 ## Try It
 
-Knotweave is launching soon on the App Store and Google Play. No account needed to play — just open the app and start tracing.
+Knotweave is available now on [Google Play](https://play.google.com/store/apps/details?id=com.minixium.zip_game), with the iOS version launching soon on the App Store. No account needed to play — just open the app and start tracing.
 
 Found a bug or have a level idea? My contact details are in the app's Settings screen. I read everything.

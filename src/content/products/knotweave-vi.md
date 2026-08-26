@@ -22,10 +22,10 @@ techStack:
   - Supabase
   - Google AdMob
   - Google Sign-In
-status: "Sắp ra mắt"
+status: "Android (iOS sắp ra mắt)"
 demo: ""
 appStoreUrl: "https://apps.apple.com/app/id6752108828"
-playStoreUrl: ""
+playStoreUrl: "https://play.google.com/store/apps/details?id=com.minixium.zip_game"
 category: "Games"
 tags:
   - puzzle
@@ -77,6 +77,6 @@ Phần lớn các game "numberlink" cho phép bạn thắng ngay khi các con s�
 
 ## Trải nghiệm ngay
 
-Knotweave sắp ra mắt trên App Store và Google Play. Không cần tài khoản để chơi — chỉ cần mở ứng dụng và bắt đầu nối số.
+Knotweave đã có mặt trên [Google Play](https://play.google.com/store/apps/details?id=com.minixium.zip_game), phiên bản iOS sẽ sớm ra mắt trên App Store. Không cần tài khoản để chơi — chỉ cần mở ứng dụng và bắt đầu nối số.
 
 Phát hiện lỗi hay có ý tưởng cho màn chơi mới? Thông tin liên hệ của tôi có trong màn hình Cài đặt của ứng dụng. Tôi đọc tất cả phản hồi.
