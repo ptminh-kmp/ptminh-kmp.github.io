@@ -35,6 +35,15 @@ A retriever does the same thing:
 2. **Search the index.** It uses that understanding to search the document index.
 3. **Return matches.** It returns the documents from the knowledge base that it determines are most relevant.
 
+```mermaid
+flowchart TD
+  Q[Query] --> U[Understand the meaning]
+  U --> I[Search the index]
+  I --> KB[(Knowledge base)]
+  KB --> R[Rank documents by similarity score]
+  R --> T[Return the top documents]
+```
+
 When the search is done, the retriever **ranks** the documents by relevance. Each document gets a numeric score quantifying how relevant it is — usually some measure of **similarity** between the text of the query and the text of the document. The documents with the highest scores are the ones returned.
 
 There are many ways to compute that similarity score, and they're a big part of what you learn when going deeper into RAG.
@@ -50,6 +59,15 @@ On the other hand, if you only return the single top-ranked document, you might 
 In an ideal world the retriever would rank documents perfectly and pick exactly the right number to return. In reality, retrievers sometimes rank relevant documents too low and irrelevant documents too high, which makes deciding *how many* documents to return genuinely hard.
 
 The upshot: optimizing a retriever means watching it over time and experimenting with different settings — which is exactly the kind of iterative work that shows up throughout RAG development.
+
+```mermaid
+flowchart TD
+  Q[Query] --> R[Retriever]
+  R --> D{How many documents to return?}
+  D -->|Too many| X[Costly and buries the relevant docs]
+  D -->|Too few| Y[May miss docs ranked 2nd 3rd 4th]
+  D -->|Ideal| Z[Perfect ranking and the right count]
+```
 
 ## This isn't new — it's just new to LLMs
 

@@ -42,6 +42,14 @@ The tokens the model chose earlier affect the choices it makes later. That's des
 
 If it chooses "shining", it may then pick "in", "the", and "sky" — all sensible given what came before. But if the first token were "warming", it might instead choose "our faces", because that fits the direction the model started down. This is called being **autoregressive** — self-influencing. Combined with randomness, it means running the same prompt through the same LLM several times often produces different results.
 
+```mermaid
+flowchart LR
+  S[Current sequence] --> P[Score every token by probability]
+  P --> N[Pick the next token]
+  N --> A[Append it to the sequence]
+  A --> S
+```
+
 An LLM can understand the meaning of a question and make reasonable predictions because it was trained on large collections of text. The mathematical model behind it has billions of individual parameters (arithmetic weights). Before training, that model outputs only gibberish.
 
 ## How training works

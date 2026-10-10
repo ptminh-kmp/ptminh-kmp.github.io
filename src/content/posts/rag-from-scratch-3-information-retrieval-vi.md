@@ -35,6 +35,15 @@ Retriever cũng làm điều tương tự:
 2. **Tìm trong index.** Nó dùng sự hiểu biết đó để tìm trong index tài liệu.
 3. **Trả về kết quả khớp.** Nó trả về những tài liệu trong knowledge base mà nó xác định là liên quan nhất.
 
+```mermaid
+flowchart TD
+  Q[Truy vấn] --> U[Hiểu ý nghĩa]
+  U --> I[Tìm trong index]
+  I --> KB[(Knowledge base)]
+  KB --> R[Xếp hạng theo điểm tương đồng]
+  R --> T[Trả về các tài liệu top đầu]
+```
+
 Khi tìm xong, retriever **xếp hạng** các tài liệu theo độ liên quan. Mỗi tài liệu nhận một điểm số định lượng mức độ liên quan — thường là một thước đo **độ tương đồng** giữa văn bản câu hỏi và văn bản tài liệu. Các tài liệu điểm cao nhất là những tài liệu được trả về.
 
 Có nhiều cách tính điểm tương đồng, và đó là phần lớn nội dung khi bạn đi sâu vào RAG.
@@ -50,6 +59,15 @@ Ngược lại, nếu chỉ trả về đúng một tài liệu xếp hạng cao
 Trong thế giới lý tưởng, retriever sẽ xếp hạng hoàn hảo và chọn đúng số lượng cần trả về. Thực tế, retriever đôi khi xếp tài liệu liên quan quá thấp và tài liệu không liên quan quá cao, khiến việc quyết định *bao nhiêu* tài liệu cần trả về trở nên khó thật sự.
 
 Kết luận: tối ưu retriever nghĩa là theo dõi nó theo thời gian và thử nghiệm với các thiết lập khác nhau — đúng kiểu công việc lặp đi lặp lại xuất hiện xuyên suốt quá trình phát triển RAG.
+
+```mermaid
+flowchart TD
+  Q[Truy vấn] --> R[Retriever]
+  R --> D{Trả về bao nhiêu tài liệu?}
+  D -->|Quá nhiều| X[Tốn kém và làm loãng tài liệu liên quan]
+  D -->|Quá ít| Y[Có thể bỏ lỡ tài liệu hạng 2 3 4]
+  D -->|Lý tưởng| Z[Xếp hạng hoàn hảo và đúng số lượng]
+```
 
 ## Đây không phải chuyện mới — chỉ là mới với LLM
 

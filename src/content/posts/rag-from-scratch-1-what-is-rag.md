@@ -34,6 +34,13 @@ For some questions you don't need to gather anything — you already know the an
 
 LLMs benefit from retrieval for basically the same reason you do: better inputs lead to better answers.
 
+```mermaid
+flowchart LR
+  Q[Question] --> R["Retrieval: gather information"]
+  R --> G["Generation: interpret and respond"]
+  G --> A[Answer]
+```
+
 ## Why the model "makes things up"
 
 During training, an LLM sees huge amounts of text and learns the patterns in it. When you prompt it, you're hoping the information you need already appeared in that training data. Often it did. But when the model is asked about your company's internal data or today's news, that information almost certainly wasn't in training — so the model isn't in a good position to answer.
@@ -68,6 +75,17 @@ A RAG system looks, to the user, exactly like a normal LLM: type a prompt, get a
 2. The retriever queries a **knowledge base** — a store of useful documents — and returns the most relevant material.
 3. The system builds an **augmented prompt**: the original question plus the retrieved documents.
 4. The **LLM** receives the augmented prompt and responds, drawing on both its training knowledge and the retrieved information.
+
+```mermaid
+flowchart LR
+  U[User question] --> AP[Augmented prompt]
+  R[Retriever] -->|query| KB[(Knowledge base)]
+  KB -->|relevant documents| R
+  R --> AP
+  U --> AP
+  AP --> L[LLM]
+  L --> ANS[Answer]
+```
 
 The user experience doesn't change — there's just a small delay. In exchange, the answer is far more likely to be accurate, current, and relevant to the context.
 

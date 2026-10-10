@@ -34,6 +34,13 @@ Với một số câu hỏi, bạn không cần thu thập gì cả — bạn bi
 
 LLM hưởng lợi từ retrieval vì lý do cơ bản giống hệt bạn: đầu vào tốt hơn dẫn tới câu trả lời tốt hơn.
 
+```mermaid
+flowchart LR
+  Q[Câu hỏi] --> R["Retrieval: thu thập thông tin"]
+  R --> G["Generation: diễn giải và phản hồi"]
+  G --> A[Câu trả lời]
+```
+
 ## Vì sao model "bịa"
 
 Trong quá trình huấn luyện, LLM thấy lượng lớn văn bản và học các mẫu trong đó. Khi bạn prompt nó, bạn đang hy vọng thông tin mình cần đã xuất hiện trong dữ liệu training đó. Thường thì đúng như vậy. Nhưng khi được hỏi về dữ liệu nội bộ của công ty bạn hay tin tức hôm nay, thông tin đó gần như chắc chắn không có trong training — nên model không ở vị trí tốt để trả lời.
@@ -68,6 +75,17 @@ Với người dùng, hệ thống RAG trông giống hệt một LLM bình thư
 2. Retriever truy vấn một **knowledge base** — kho tài liệu hữu ích — và trả về phần tài liệu liên quan nhất.
 3. Hệ thống dựng **prompt tăng cường**: câu hỏi gốc cộng với tài liệu đã truy xuất.
 4. **LLM** nhận prompt tăng cường và phản hồi, dựa trên cả kiến thức huấn luyện lẫn thông tin vừa truy xuất.
+
+```mermaid
+flowchart LR
+  U[Câu hỏi người dùng] --> AP[Prompt tăng cường]
+  R[Retriever] -->|truy vấn| KB[(Knowledge base)]
+  KB -->|tài liệu liên quan| R
+  R --> AP
+  U --> AP
+  AP --> L[LLM]
+  L --> ANS[Câu trả lời]
+```
 
 Trải nghiệm người dùng không đổi — chỉ thêm một chút delay. Đổi lại, câu trả lời có khả năng chính xác, cập nhật và phù hợp ngữ cảnh cao hơn nhiều.
 

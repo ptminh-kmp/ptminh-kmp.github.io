@@ -42,6 +42,14 @@ Các token model chọn trước đó ảnh hưởng đến lựa chọn sau nà
 
 Nếu chọn "shining", nó có thể chọn tiếp "in", "the", "sky" — đều hợp lý so với những gì đã có. Nhưng nếu token đầu là "warming", nó có thể chọn "our faces", vì điều đó khớp với hướng model đã bắt đầu. Hành vi này gọi là **tự hồi quy (autoregressive)** — tự ảnh hưởng. Kết hợp với yếu tố ngẫu nhiên, nó khiến việc chạy cùng một prompt qua cùng một LLM nhiều lần thường cho kết quả khác nhau.
 
+```mermaid
+flowchart LR
+  S[Chuỗi hiện tại] --> P[Tính xác suất cho mọi token]
+  P --> N[Chọn token tiếp theo]
+  N --> A[Nối token vào chuỗi]
+  A --> S
+```
+
 LLM hiểu được ý nghĩa câu hỏi và đưa ra dự đoán hợp lý vì nó được huấn luyện trên các bộ sưu tập văn bản lớn. Mô hình toán học đứng sau có hàng tỷ tham số (trọng số số học). Trước khi huấn luyện, model đó chỉ tạo ra văn bản vô nghĩa.
 
 ## Huấn luyện diễn ra thế nào
